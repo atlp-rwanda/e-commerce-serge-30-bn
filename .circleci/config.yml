@@ -1,0 +1,25 @@
+version: 2.1
+
+jobs:
+  local-job:
+    docker:
+      - image: node:lts-alpine3.19 
+    steps:
+      - checkout 
+      - run: echo "Server is running..."
+      - run: npm install 
+      # - run:
+      #     command: npm run test
+      #     name: Run tests
+      # - run:
+      #     command: npm run coverage
+      #     name: Run Coverage
+      # - store_artifacts:
+      #     path: coverage
+      # - store_test_results:
+      #    path: test-results
+  
+workflows:
+  build_and_test:
+    jobs:
+      - local-job
