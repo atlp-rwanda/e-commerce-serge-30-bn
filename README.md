@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/e-commerce-serge-30-bn/badge.svg?branch=ch-setup-express-server-187364838)](https://coveralls.io/github/atlp-rwanda/e-commerce-serge-30-bn?branch=ch-setup-express-server-187364838)
+
 E-commerce API
 ===============
 
@@ -11,6 +13,7 @@ Table of Contents
 * [Dependencies](#dependencies)
 * [Folder Structure](#folder-structure)
 * [Branch Naming](#branch-naming)
+* [Swagger Documentation](#swagger-documentation)
 * [Contributing](#contributing)
 * [License](#license)
 
@@ -34,6 +37,215 @@ npm install
 5. Start the server:
 ```
 npm run server
+```
+Accessing the Application
+-------------------------
+
+Once the server is running, you can access the application by navigating to the specified URL in your web browser. By default, the application might be accessible at `http://localhost:3000/api/v1`, but this can vary depending on your configuration.
+
+Database Configuration
+----------------------
+
+Copy the `.env.example` file and rename it to .env.
+Update the `.env` file with your postgresSQL configuration settings.
+
+Database Migration
+------------------
+
+1.Create migration file:
+```
+npx sequelize-cli migration:create --name <file-name>
+```
+2.Run Sequelize migration:
+```
+npx sequelize-cli db:migrate
+```
+3.Undo migration:
+```
+npx sequelize-cli db:migrate:undo
+```
+
+5.you can edit schema by editing migration file or by using seeders
+
+* Create Seed file:
+```
+npx sequelize-cli seed:generate --name <name>
+```
+* Running seeds
+```
+npx sequelize-cli db:seed:all
+```
+* Undoing seeds
+```
+npx sequelize-cli db:seed:undo
+```
+
+Accessing the Application
+-------------------------
+
+Once the server is running, you can access the application by navigating to the specified URL in your web browser. By default, the application might be accessible at `http://localhost:3000/api/v1`, but this can vary depending on your configuration.
+
+Database Configuration
+----------------------
+
+Copy the `.env.example` file and rename it to .env.
+Update the `.env` file with your postgresSQL configuration settings.
+
+Database Migration
+------------------
+
+1.Create migration file:
+```
+npx sequelize-cli migration:create --name <file-name>
+```
+2.Run Sequelize migration:
+```
+npx sequelize-cli db:migrate
+```
+3.Undo migration:
+```
+npx sequelize-cli db:migrate:undo
+```
+
+5.you can edit schema by editing migration file or by using seeders
+
+* Create Seed file:
+```
+npx sequelize-cli seed:generate --name <name>
+```
+* Running seeds
+```
+npx sequelize-cli db:seed:all
+```
+* Undoing seeds
+```
+npx sequelize-cli db:seed:undo
+```
+
+Accessing the Application
+-------------------------
+
+Once the server is running, you can access the application by navigating to the specified URL in your web browser. By default, the application might be accessible at `http://localhost:3000/api/v1`, but this can vary depending on your configuration.
+
+Database Configuration
+----------------------
+
+Copy the `.env.example` file and rename it to .env.
+Update the `.env` file with your postgresSQL configuration settings.
+
+Database Migration
+------------------
+
+1.Create migration file:
+```
+npx sequelize-cli migration:create --name <file-name>
+```
+2.Run Sequelize migration:
+```
+npx sequelize-cli db:migrate
+```
+3.Undo migration:
+```
+npx sequelize-cli db:migrate:undo
+```
+
+5.you can edit schema by editing migration file or by using seeders
+
+* Create Seed file:
+```
+npx sequelize-cli seed:generate --name <name>
+```
+* Running seeds
+```
+npx sequelize-cli db:seed:all
+```
+* Undoing seeds
+```
+npx sequelize-cli db:seed:undo
+```
+
+Accessing the Application
+-------------------------
+
+Once the server is running, you can access the application by navigating to the specified URL in your web browser. By default, the application might be accessible at `http://localhost:3000/api/v1`, but this can vary depending on your configuration.
+
+Database Configuration
+----------------------
+
+Copy the `.env.example` file and rename it to .env.
+Update the `.env` file with your postgresSQL configuration settings.
+
+Database Migration
+------------------
+
+1.Create migration file:
+```
+npx sequelize-cli migration:create --name <file-name>
+```
+2.Run Sequelize migration:
+```
+npx sequelize-cli db:migrate
+```
+3.Undo migration:
+```
+npx sequelize-cli db:migrate:undo
+```
+
+5.you can edit schema by editing migration file or by using seeders
+
+* Create Seed file:
+```
+npx sequelize-cli seed:generate --name <name>
+```
+* Running seeds
+```
+npx sequelize-cli db:seed:all
+```
+* Undoing seeds
+```
+npx sequelize-cli db:seed:undo
+```
+
+Accessing the Application
+-------------------------
+
+Once the server is running, you can access the application by navigating to the specified URL in your web browser. By default, the application might be accessible at `http://localhost:3000/api/v1`, but this can vary depending on your configuration.
+
+Database Configuration
+----------------------
+
+Copy the `.env.example` file and rename it to .env.
+Update the `.env` file with your postgresSQL configuration settings.
+
+Database Migration
+------------------
+
+1.Create migration file:
+```
+npx sequelize-cli migration:create --name <file-name>
+```
+2.Run Sequelize migration:
+```
+npx sequelize-cli db:migrate
+```
+3.Undo migration:
+```
+npx sequelize-cli db:migrate:undo
+```
+
+5.you can edit schema by editing migration file or by using seeders
+
+* Create Seed file:
+```
+npx sequelize-cli seed:generate --name <name>
+```
+* Running seeds
+```
+npx sequelize-cli db:seed:all
+```
+* Undoing seeds
+```
+npx sequelize-cli db:seed:undo
 ```
 
 Dependencies
@@ -85,6 +297,13 @@ ft-resources-rest-endpoints-0408
 ```
 For more information, see the [Engineering Playbook](https://github.com/atlp-rwanda/engineering-playbook/wiki/).
 
+Swagger Documentation
+---------------------
+You can explore the API endpoints and their functionalities using Swagger UI at:
+
+- [Development Server](http://localhost:8000/docs)
+- [Staging Server](https://staging-e-commerce-serge-30-bn.onrender.com/docs)
+
 Contributing
 ------------
 
@@ -94,3 +313,4 @@ License
 -------
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+[![Node.js CI](https://github.com/atlp-rwanda/e-commerce-serge-30-bn/actions/workflows/node.js.yml/badge.svg)](https://github.com/atlp-rwanda/e-commerce-serge-30-bn/actions/workflows/node.js.yml)
