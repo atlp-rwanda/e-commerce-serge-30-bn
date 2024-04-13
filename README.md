@@ -8,8 +8,12 @@ Table of Contents
 
 * [Features](#features)
 * [Getting Started](#getting-started)
+* [Accessing the Application](#accessing-the-application)
+* [Database Configuration](#database-configuration)
+* [Database Migration](#database-migration)
 * [Dependencies](#dependencies)
 * [Folder Structure](#folder-structure)
+* [Documentation](#swagger-documentation)
 * [Branch Naming](#branch-naming)
 * [Contributing](#contributing)
 * [License](#license)
@@ -64,6 +68,14 @@ Folder Structure
 * `helpers/`: Helper functions used throughout the API.
 * `routes/`: Express routes that define the endpoints for the API.
 
+Swagger Documentation
+---------------------
+
+You can explore the API endpoints and their functionalities using Swagger UI at:
+
+* Development Server: [http://localhost:8000/docs](http://localhost:8000/docs)
+* Staging Server: [https://staging-e-commerce-serge-30-bn.onrender.com/docs](https://staging-e-commerce-serge-30-bn.onrender.com/docs)
+
 
 Branch Naming
 -------------
@@ -95,3 +107,4 @@ License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 [![Node.js CI](https://github.com/atlp-rwanda/e-commerce-serge-30-bn/actions/workflows/node.js.yml/badge.svg)](https://github.com/atlp-rwanda/e-commerce-serge-30-bn/actions/workflows/node.js.yml)
+

@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/atlp-rwanda/e-commerce-serge-30-bn#readme",
   "dependencies": {
+    "@types/swagger-jsdoc": "^6.0.4",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -32,6 +33,7 @@
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",
     "sequelize": "^6.37.2",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "winston": "^3.13.0"
   },
