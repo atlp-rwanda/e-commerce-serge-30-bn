@@ -162,3 +162,49 @@
  *     tags:
  *       - auth
  */
+/**
+* @openapi
+* /api/v1/auth/login:
+*   post:
+*     summary: Login User
+*     description: Login a user to the system
+*     tags:
+*       - auth
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               email:
+*                 type: string
+*                 description: The user's email address
+*                 example: user@example.com
+*               password:
+*                 type: string
+*                 description: The user's password
+*                 example: password123
+*     responses:
+*       200:
+*         description: Login successful
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 token:
+*                   type: string
+*                   description: Authentication token
+*                 user:
+*                   type: object
+*                   description: User information
+*                   properties:
+*                     # Add user properties here (e.g., name, id)
+*       401:
+*         description: Invalid credentials
+*       400:
+*         description: Bad request
+*       500:
+*         description: Internal server error
+*/

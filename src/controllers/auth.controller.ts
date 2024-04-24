@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import AuthService from '../service/auth.service';
 import bcrypt from 'bcrypt';
 
+import { validate } from '../middleware/validators/schemaValidators';
+import { generateToken } from '../utils/jwt.utils';
 export const forgotPassword = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
@@ -62,4 +64,32 @@ export const updatePassword = async (req: Request, res: Response) => {
     console.error('Error updating password:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
+};
+export const Login = async (req: Request, res: Response) => {
+  const { error } = validate(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+
+  const { email, password } = req.body;
+
+  const user = await AuthService.getUserByEmail(email);
+
+  if (!user) {
+    return res.status(404).json({ message: "User doesn't exist" });
+  }
+
+  const passwordMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordMatch) {
+    return res.status(401).json({ message: 'Invalid email or password' });
+  }
+  const passwordRemoved = { ...user.toJSON(), password: undefined };
+  const token = generateToken({ user: passwordRemoved });
+  return res
+    .header('Authorization', token)
+    .cookie('Authorization', token, {
+      httpOnly: true,
+      maxAge: 60 * 600 * 1000,
+    })
+    .status(200)
+    .json({ message: `${user.username} successfully logged in`, token });
 };

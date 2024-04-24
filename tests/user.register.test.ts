@@ -18,8 +18,10 @@ beforeAll(() => {
 });
 
 
+beforeAll(() => {
+  server;
+});
 describe('POST /create', () => {
-
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -64,7 +66,9 @@ describe('POST /create', () => {
 
   it('should return a 400 error for existing email', async () => {
     // Simulate the error condition where the email already exists
-    jest.spyOn(UserService, 'createUser').mockRejectedValue(new Error('Email already exists'));
+    jest
+      .spyOn(UserService, 'createUser')
+      .mockRejectedValue(new Error('Email already exists'));
 
     const userData = {
       username: 'testuser',
@@ -78,8 +82,10 @@ describe('POST /create', () => {
       .post('/api/v1/create')
       .send(userData);
     expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('message', 'Email is already registered');
-
+    expect(response.body).toHaveProperty(
+      'message',
+      'Email is already registered',
+    );
   });
 
   it('should create a new user successfully', async () => {
@@ -99,16 +105,19 @@ describe('POST /create', () => {
     expect(response.body).toHaveProperty('data');
 
     // Retrieve the created user
-    const createdUser = await User.findOne({ where: { email: userData.email } });
+    const createdUser = await User.findOne({
+      where: { email: userData.email },
+    });
 
-    if(createdUser){
+    if (createdUser) {
       await createdUser.destroy();
     }
-    const deletedUser = await User.findOne({ where: { email: userData.email } });
+    const deletedUser = await User.findOne({
+      where: { email: userData.email },
+    });
     expect(deletedUser).toBeNull();
   });
 });
-afterAll(async () => {
-  // Perform cleanup tasks here, such as stopping the server
+afterAll(()=>{
   server.close();
-});
+})
