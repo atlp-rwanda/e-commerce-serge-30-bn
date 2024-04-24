@@ -14,7 +14,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "typeRoots": ["node_modules/@types", "./types"],
-    "types": ["swagger-ui-express"]
+    "types": ["node","swagger-ui-express"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "tests"]

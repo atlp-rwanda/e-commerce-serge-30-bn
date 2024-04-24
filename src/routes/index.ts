@@ -8,6 +8,10 @@ import {
 } from '../controllers/user.controller';
 import { validateSchema, UserSchema } from '../validations/user.validation'
 
+
+
+
+
 const router = express.Router();
 
 export default (): express.Router => {
@@ -17,5 +21,9 @@ export default (): express.Router => {
   router.patch('/:id', updateUser);
   router.delete('/:id', deleteUser);
 
+
   return router;
 };
+
+
+

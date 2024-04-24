@@ -1,5 +1,5 @@
 import { User } from '../models';
-import sendEmail from '../helpers/sendEmail';
+import {sendEmail} from '../helpers/sendEmail';
 import crypto from 'crypto';
 import { Op } from 'sequelize';
 import { resetPasswordTemplate } from '../helpers/EmailTemplates/resetPasswordTemplate';
@@ -29,7 +29,12 @@ class AuthService {
     // Generate email content (HTML format recommended for better formatting)
     const emailContent = resetPasswordTemplate(resetUrl);
 
-    await sendEmail(user.email, 'Password Reset', emailContent); // Send email using sendEmail function
+    await sendEmail({
+      to: user.email,
+      from: 'your@email.com',
+      subject: 'Password Reset',
+      html: emailContent,
+    }); // Send email using sendEmail function
 
     return 'A password reset link has been sent to your email';
   }
