@@ -5,9 +5,6 @@
  *     User:
  *       type: object
  *       properties:
- *         id:
- *           type: integer
- *           description: The user's ID.
  *         username:
  *           type: string
  *           description: The username of the user.
@@ -18,40 +15,22 @@
  *         password:
  *           type: string
  *           description: The password of the user.
+ *         firstname:
+ *           type: string
+ *           description: The first name of the user.
+ *         lastname:
+ *           type: string
+ *           description: The last name of the user.
  *       required:
  *         - username
  *         - email
  *         - password
+ *         - firstname
+ *         - lastname
  */
 
 /**
  * @openapi
- * /api/v1/create:
- *   post:
- *     summary: Create a new user
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *             required:
- *               - username
- *               - email
- *               - password
- *     responses:
- *       201:
- *         description: User created successfully
- *       400:
- *         description: Error occurred while creating user
  * /api/v1/users:
  *   get:
  *     summary: Get all users
