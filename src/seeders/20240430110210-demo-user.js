@@ -14,8 +14,11 @@ module.exports = {
       'users',
       [
         {
-          firstName: 'Admin',
-          lastName: 'User',
+          user_id: process.env.ADMIN_ID,
+          username: 'admin',
+          firstname: 'coder',
+          lastname: 'john',
+          verified: true,
           role: 'ADMIN',
           email: 'admin@example.com',
           password: hashedPassword,
