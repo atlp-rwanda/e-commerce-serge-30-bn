@@ -12,10 +12,17 @@ class User extends Model {
   resetToken!: string | null;
   resetTokenExpiration!: string | null;
   verified!: boolean;
+  role!: Enumerator
 }
 
 User.init(
   {
+    user_id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false,
+    },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -43,6 +50,41 @@ User.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    firstname: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    lastname: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    role: {
+      type: DataTypes.ENUM("USER", "ADMIN", "VENDOR"),
+      defaultValue: "USER",
+      allowNull:false
+    },
+    image_url: {
+      type: DataTypes.STRING(255),
+      allowNull:true
+    },
+     google_id: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    google_token: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    }
   },
   {
     tableName: 'users',
