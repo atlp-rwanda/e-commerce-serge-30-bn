@@ -34,9 +34,9 @@ const testing = new Sequelize(
   {
     host: process.env.PGHOSTTEST!,
     dialect: 'postgres',
-    dialectOptions: {
-      ssl: { rejectUnauthorized: false },
-    },
+    // dialectOptions: {
+    //   ssl: { rejectUnauthorized: false },
+    // },
   },
 );
 export { development, production, testing };

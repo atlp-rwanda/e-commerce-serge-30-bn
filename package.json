@@ -6,6 +6,10 @@
   "scripts": {
     "test": "jest  --detectOpenHandles",
     "start": "tsc && node dist/server.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "undo:migrations": "npx sequelize-cli db:migrate:undo:all",
+    "seed": "npx sequelize-cli db:seed:all",
+    "undo:seed": "npx sequelize-cli db:seed:undo:all",
     "server": "nodemon",
     "prepare": "husky install",
     "lint": "eslint ."
