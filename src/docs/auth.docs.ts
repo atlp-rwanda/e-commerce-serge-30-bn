@@ -28,7 +28,7 @@
  *                   description: Success message indicating the reset link has been sent.
  *                   example: A password reset link has been sent to your email
  *       '400':
- *         description: Bad request (e.g., email not found).
+ *         description: Bad request 
  *         content:
  *           application/json:
  *             schema:
@@ -79,7 +79,7 @@
  *                   description: Success message indicating the password has been reset.
  *                   example: Password reset successful
  *       '400':
- *         description: Bad request (e.g., invalid or expired token).
+ *         description: Bad request 
  *         content:
  *           application/json:
  *             schema:
@@ -112,7 +112,7 @@
  *                   description: Logout Successfully.
  *                   example: Logout successful
  *       '400':
- *         description: Bad request (e.g.: invalid or expired token).
+ *         description: Bad request 
  *         content:
  *           application/json:
  *             schema:
@@ -200,7 +200,7 @@
 *                   type: object
 *                   description: User information
 *                   properties:
-*                     # Add user properties here (e.g., name, id)
+*                     # Add user properties here 
 *       401:
 *         description: Invalid credentials
 *       400:
