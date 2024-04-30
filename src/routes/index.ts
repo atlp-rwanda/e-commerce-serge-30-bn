@@ -21,8 +21,6 @@ const routers: Router[] = [
   categoryRoutes,
   productRoutes,
   vendorRoutes,
-];
-
+]
 router.use('/api/v1', routers);
-
 export default router;
