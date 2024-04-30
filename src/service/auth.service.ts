@@ -8,6 +8,7 @@ import { resetPasswordTemplate } from '../helpers/EmailTemplates/resetPasswordTe
 
 interface UserData {
   email: string;
+  user_id: string;
 }
 
 class AuthService {
