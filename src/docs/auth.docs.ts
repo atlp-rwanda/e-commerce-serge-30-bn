@@ -92,3 +92,40 @@
  *     tags:
  *       - auth
  */
+/**
+ * @openapi
+ * /api/v1/auth/{userId}/update-password:
+ *   put:
+ *     summary: Change user password
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     requestBody:
+ *       description: Update an existing password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *                 description: Old password
+ *               newPassword:
+ *                 type: string
+ *                 description: New password
+ *               confirmPassword:
+ *                 type: string
+ *                 description: Confirm new password
+ *     responses:
+ *       '200':
+ *         description: Password updated successfully
+ *       '400':
+ *         description: Invalid request or old password
+ *     tags:
+ *       - auth
+ */
