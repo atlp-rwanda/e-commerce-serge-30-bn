@@ -1,6 +1,7 @@
 import { User } from '../models';
 import {sendEmail} from '../helpers/sendEmail';
 import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
 import { resetPasswordTemplate } from '../helpers/EmailTemplates/resetPasswordTemplate';
 
@@ -69,6 +70,23 @@ class AuthService {
     await user.save();
 
     return 'Password reset successful';
+  }
+
+  public static async verifyPassword(userId: string, oldPassword: string): Promise<boolean> {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return bcrypt.compare(oldPassword, user.password);
+  }
+
+  public static async updatePassword(userId: string, newPassword: string): Promise<void> {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    
+    await user.update({ password: newPassword });
   }
 }
 
