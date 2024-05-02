@@ -22,4 +22,9 @@ export const AuthSchema = {
       .required()
       .error(new Error('Passwords must match')),
   }),
+  updatePassword: Joi.object({
+    oldPassword: Joi.string().required(),
+    newPassword: Joi.string().min(6).required(),
+    confirmPassword: Joi.string().required(),
+  }),
 };

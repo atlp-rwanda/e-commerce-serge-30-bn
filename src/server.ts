@@ -35,7 +35,7 @@ export function configureApp(): express.Application {
 
 const PORT = process.env.PORT || 8000;
 const app = configureApp();
-const server = createServer(app);
+export const server = createServer(app);
 const isProduction = process.env.NODE_ENV === 'production';
 const isTesting = process.env.NODE_ENV === 'testing';
 const sequelize = isProduction ? production : isTesting ? testing : development;
