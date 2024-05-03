@@ -28,6 +28,16 @@ export const resetPassword = async (req: Request, res: Response) => {
   }
 };
 
+
+export const LogoutUsers = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("Authorization");
+    return res.status(200).send('Logout Successfully');
+  } catch (error) {
+    console.error('Logout error ', error);
+    res.status(500).json({ error: 'Logout failed' });
+  }
+};
 export const updatePassword = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const { oldPassword, newPassword, confirmPassword } = req.body;

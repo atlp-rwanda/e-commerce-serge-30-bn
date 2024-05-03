@@ -1,10 +1,22 @@
 import request from 'supertest';
-import { configureApp } from '../src/server';
-import { describe, expect, it, jest, afterEach } from '@jest/globals';
+// import { configureApp } from '../src/server';
+import {
+  describe,
+  expect,
+  it,
+  jest,
+  afterEach,beforeAll,
+  afterAll,
+} from '@jest/globals';
 import { UserService } from '../src/service/user.service';
 import User from '../src/models/user.model';
+import { server } from '../src/server';
+// const app = configureApp();
 
-const app = configureApp();
+beforeAll(() => {
+  server;
+});
+
 
 describe('POST /create', () => {
 
@@ -13,9 +25,7 @@ describe('POST /create', () => {
   });
 
   it('should return a 400 error for missing required fields', async () => {
-    const response = await request(app)
-      .post('/api/v1/create')
-      .send({}); // Sending empty object to simulate missing required fields
+    const response = await request(server).post('/api/v1/create').send({}); // Sending empty object to simulate missing required fields
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('message');
   });
@@ -29,7 +39,7 @@ describe('POST /create', () => {
       lastname: 'Doe',
     };
 
-    const response = await request(app)
+    const response = await request(server)
       .post('/api/v1/create')
       .send(userData);
     expect(response.status).toBe(400);
@@ -45,7 +55,7 @@ describe('POST /create', () => {
       lastname: 'Doe',
     };
 
-    const response = await request(app)
+    const response = await request(server)
       .post('/api/v1/create')
       .send(userData);
     expect(response.status).toBe(400);
@@ -64,7 +74,7 @@ describe('POST /create', () => {
       lastname: 'Doe',
     };
 
-    const response = await request(app)
+    const response = await request(server)
       .post('/api/v1/create')
       .send(userData);
     expect(response.status).toBe(400);
@@ -81,7 +91,7 @@ describe('POST /create', () => {
       lastname: 'Doe',
     };
 
-    const response = await request(app)
+    const response = await request(server)
       .post('/api/v1/create')
       .send(userData);
     expect(response.status).toBe(201);
@@ -97,4 +107,8 @@ describe('POST /create', () => {
     const deletedUser = await User.findOne({ where: { email: userData.email } });
     expect(deletedUser).toBeNull();
   });
+});
+afterAll(async () => {
+  // Perform cleanup tasks here, such as stopping the server
+  server.close();
 });

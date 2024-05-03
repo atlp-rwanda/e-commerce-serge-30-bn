@@ -92,6 +92,39 @@
  *     tags:
  *       - auth
  */
+
+/**
+ * @openapi
+ * /api/v1/auth/logout:
+ *   get:
+ *     summary: Logout User
+ *     description: Logout User.
+ *     responses:
+ *       '200':
+ *         description: Logout  successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Logout Successfully.
+ *                   example: Logout successful
+ *       '400':
+ *         description: Bad request (e.g.: invalid or expired token).
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message explaining the reason for the bad request.
+ *                   example: Errors
+ *     tags:
+ *       - auth
+ */
 /**
  * @openapi
  * /api/v1/auth/{userId}/update-password:
