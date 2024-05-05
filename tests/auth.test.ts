@@ -7,6 +7,8 @@ import {server} from "../src/server"
 jest.mock('../src/service/auth.service');
 
 const app = configureApp() ; // Replace with your app entry point
+
+
 beforeAll(() => {
   server;
 });
@@ -35,7 +37,11 @@ describe('PUT /api/v1/auth/:userId/update-password', () => {
 
     const response = await request(server)
       .put(`/api/v1/auth/:userId/update-password`)
-      .send({ oldPassword: 'wrongOldPassword', newPassword: 'newPassword', confirmPassword: 'newPassword' });
+      .send({
+        oldPassword: 'wrongOldPassword',
+        newPassword: 'newPassword',
+        confirmPassword: 'newPassword',
+      });
 
     expect(response.status).toBe(401);
     expect(response.body).toEqual({ message: 'Invalid old password' });
@@ -46,7 +52,11 @@ describe('PUT /api/v1/auth/:userId/update-password', () => {
 
     const response = await request(server)
       .put(`/api/v1/auth/:userId/update-password`)
-      .send({ oldPassword: 'validOldPassword', newPassword: 'newPassword', confirmPassword: 'newPassword123' });
+      .send({
+        oldPassword: 'validOldPassword',
+        newPassword: 'newPassword',
+        confirmPassword: 'newPassword123',
+      });
 
     expect(response.status).toBe(401);
     expect(response.body).toEqual({ message: 'Password must match' });
@@ -54,17 +64,24 @@ describe('PUT /api/v1/auth/:userId/update-password', () => {
 
   it('should return a 500 error if user is not found when updating password', async () => {
     jest.spyOn(AuthService, 'verifyPassword').mockResolvedValue(true);
-    jest.spyOn(AuthService, 'updatePassword').mockRejectedValue(new Error('User not found'));
+    jest
+      .spyOn(AuthService, 'updatePassword')
+      .mockRejectedValue(new Error('User not found'));
 
     const response = await request(server)
       .put(`/api/v1/auth/:userId/update-password`)
-      .send({ oldPassword: 'validOldPassword', newPassword: 'newPassword', confirmPassword: 'newPassword' });
+      .send({
+        oldPassword: 'validOldPassword',
+        newPassword: 'newPassword',
+        confirmPassword: 'newPassword',
+      });
 
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ message: 'Internal server error' });
   });
-
 });
+
+
 
 
 describe('GET /api/v1/auth/logout', () => {
@@ -95,4 +112,33 @@ describe('GET /api/v1/auth/logout', () => {
 afterAll(async () => {
   // Perform cleanup tasks here, such as stopping the server
    server.close();
+});
+describe('POST /api/v1/auth/login', () => {
+  it('should return a 400 error for missing email', async () => {
+    const response = await request(server)
+      .post('/api/v1/auth/login')
+      .send({ password: 'password123' });
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: '"email" is required' });
+  });
+
+  it('should return a 400 error for missing password', async () => {
+    const response = await request(server)
+      .post('/api/v1/auth/login')
+      .send({ email: 'user@example.com' });
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: '"password" is required' });
+  });
+
+  it('should return a 404 error for non-existent user', async () => {
+    const response = await request(server)
+      .post('/api/v1/auth/login')
+      .send({ email: 'nonexistent@example.com', password: 'password123' });
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty('message');
+  });
+});
+
+afterAll(() => {
+  server.close();
 });

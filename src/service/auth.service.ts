@@ -1,4 +1,4 @@
-import { User } from '../models';
+import  User  from '../models/user.model';
 import {sendEmail} from '../helpers/sendEmail';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
@@ -85,9 +85,14 @@ class AuthService {
     if (!user) {
       throw new Error('User not found');
     }
-    
+  
     await user.update({ password: newPassword });
   }
+  // get user by email
+  public static async getUserByEmail(email: string): Promise<User | null> {
+    return User.findOne({ where: { email } });
+  }
 }
+
 
 export default AuthService;
