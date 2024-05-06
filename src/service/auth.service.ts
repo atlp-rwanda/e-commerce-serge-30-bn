@@ -5,16 +5,22 @@ import bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
 import { resetPasswordTemplate } from '../helpers/EmailTemplates/resetPasswordTemplate';
 
+
+interface UserData {
+  email: string;
+}
+
 class AuthService {
-  public static async querySingleUser(options: any): Promise<User> {
-    const user = await User.findOne({ where: options });
+  public static async querySingleUser(options: { where: Partial<UserData> }): Promise<User> {
+    const user = await User.findOne({ where: options.where });
     if (!user) {
       throw new Error('User not found');
     }
     return user;
   }
+  
   public static async forgotPassword(email: string) {
-    const user = await AuthService.querySingleUser({ email });
+    const user = await AuthService.querySingleUser({ where: { email } });
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenExpiration = new Date(
       Date.now() + 24 * 60 * 60 * 1000,
@@ -28,14 +34,35 @@ class AuthService {
     const resetUrl = `${process.env.DEPLOYED_URL}/api/v1/auth/reset-password/${resetToken}`;
 
     // Generate email content (HTML format recommended for better formatting)
-    const emailContent = resetPasswordTemplate(resetUrl);
+   
+    interface EmailOptions {
+      to: string | string[];
+      from: string;
+      subject: string;
+      template: (data: UserData) => string;
+      attachmentPath?: string;
+      isVerificationEmail?: boolean;
+    }
+    
 
-    await sendEmail({
-      to: user.email,
-      from: 'your@email.com',
-      subject: 'Password Reset',
-      html: emailContent,
-    }); // Send email using sendEmail function
+    const fromEmail = process.env.FROM_EMAIL;
+
+    if(fromEmail){
+        const emailOptions: EmailOptions = {
+        to: user.email,
+        from: fromEmail,
+        subject: 'Reset password',
+        template: () =>
+          resetPasswordTemplate(
+            resetUrl
+          ),
+      };
+      await sendEmail(emailOptions);
+    }else {
+      console.error('FROM_EMAIL environment variable is not set.'); 
+  }
+
+    
 
     return 'A password reset link has been sent to your email';
   }

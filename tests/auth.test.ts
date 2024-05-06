@@ -3,7 +3,6 @@ import { configureApp } from '../src/server';
 import { describe, expect, it, jest ,beforeAll,afterAll} from '@jest/globals';
 import AuthService from '../src/service/auth.service';
 import {server} from "../src/server"
-
 jest.mock('../src/service/auth.service');
 
 const app = configureApp() ; // Replace with your app entry point
@@ -80,7 +79,6 @@ describe('PUT /api/v1/auth/:userId/update-password', () => {
     expect(response.body).toEqual({ message: 'Internal server error' });
   });
 });
-
 
 
 
