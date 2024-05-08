@@ -5,6 +5,14 @@ const isProduction = process.env.NODE_ENV === 'production';
 const isTesting = process.env.NODE_ENV === 'testing';
 const sequelize = isProduction ? production : isTesting ? testing : development;
 
+
+// eslint-disable-next-line no-shadow
+export enum UserRole {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+  VENDOR = 'VENDOR',
+}
+
 class User extends Model {
   username!: string;
   email!: string;
@@ -12,7 +20,7 @@ class User extends Model {
   resetToken!: string | null;
   resetTokenExpiration!: string | null;
   verified!: boolean;
-  role!: Enumerator
+  role!: UserRole
 }
 
 User.init(
@@ -60,7 +68,7 @@ User.init(
     },
     role: {
       type: DataTypes.ENUM("USER", "ADMIN", "VENDOR"),
-      defaultValue: "USER",
+      defaultValue: UserRole.USER,
       allowNull:false
     },
     image_url: {

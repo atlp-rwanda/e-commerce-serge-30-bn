@@ -6,14 +6,18 @@ import {
   getUserById,
   updateUser,
 } from '../controllers/user.controller';
-import { validateSchema, UserSchema } from '../validations/user.validation';
+import { validateSchema, UserSchema } from '../validations/user.validation'
 
-const router = express.Router();
 
-  router.post('/create', validateSchema(UserSchema.signUp), registerUser);
-  router.get('/users', getAllUsers);
-  router.get('/:id', getUserById);
-  router.patch('/:id', updateUser);
-  router.delete('/:id', deleteUser);
+const userRoute = express.Router();
 
-export { router }
+  userRoute.post('/create', validateSchema(UserSchema.signUp), registerUser);
+  userRoute.get('/users', getAllUsers);
+  userRoute.get('/:id', getUserById);
+  userRoute.get('/:id',updateUser);
+  userRoute.delete('/:id', deleteUser)
+
+export default userRoute;
+
+
+

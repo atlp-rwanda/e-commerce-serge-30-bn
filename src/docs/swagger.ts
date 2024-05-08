@@ -26,15 +26,15 @@ const options: swaggerJsdoc.Options = {
     components: {
       securitySchemes: {
         bearerAuth: {
-          type: 'apiKey',
-          name: 'Authorization',
-          in: 'header',
-          description: 'Bearer token authorization',
+          type: "apiKey",
+          name: "Authorization",
+          in: "header",
+          description: "Bearer token authorization",
         },
       },
     },
   },
-  apis: ['./src/docs/documentation.ts', './src/docs/auth.docs.ts', './src/docs/user.docs.ts'],
+  apis: ['./src/docs/annotations/**/*.ts'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
