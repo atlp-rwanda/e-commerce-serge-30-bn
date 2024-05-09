@@ -11,13 +11,15 @@
     "seed": "npx sequelize-cli db:seed:all",
     "undo:seed": "npx sequelize-cli db:seed:undo:all",
     "server": "nodemon",
-    "prepare": "husky install",
     "lint": "eslint ."
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm test"
-    }
+  "pre-commit": ["lint-staged"],
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "npm run lint",
+      "git add"
+    ],
+    "!dist/**/*.js": []
   },
   "repository": {
     "type": "git",
@@ -80,6 +82,7 @@
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.0.11",
     "pg": "^8.11.5",
+    "pre-commit": "^1.2.2",
     "prettier": "^3.2.5",
     "sequelize-cli": "^6.6.2",
     "ts-jest": "^29.1.2",
