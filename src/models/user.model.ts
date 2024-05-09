@@ -1,5 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import { development, production, testing } from '../db/config';
+import Profile from './profile.model';
+
 
 const isProduction = process.env.NODE_ENV === 'production';
 const isTesting = process.env.NODE_ENV === 'testing';
@@ -21,6 +23,13 @@ class User extends Model {
   resetTokenExpiration!: string | null;
   verified!: boolean;
   role!: UserRole
+ 
+  
+  public static associate( 
+    models: { Profile: typeof Profile }){
+    User.hasOne(models.Profile); 
+  }
+
 }
 
 User.init(

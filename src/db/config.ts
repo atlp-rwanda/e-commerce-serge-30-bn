@@ -9,9 +9,9 @@ const development = new Sequelize(
   {
     host: process.env.PGHOST!,
     dialect: 'postgres',
-    dialectOptions: {
-      ssl: { rejectUnauthorized: false },
-    },
+    // dialectOptions: {
+    //   ssl: { rejectUnauthorized: false },
+    // },
   },
 );
 const production = new Sequelize(
