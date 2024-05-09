@@ -33,3 +33,15 @@ export const AuthSchema = {
   }),
 };
 
+export const EmailSchema = {
+  email: Joi.object({
+    email: Joi.string().email().required(),
+  })
+};
+
+export const EmailTokenSchema = {
+  emailToken: Joi.object({
+    email: Joi.string().email().required(),
+    code: Joi.string().min(3).required(),
+  }),
+};

@@ -108,8 +108,5 @@
  *       404:
  *         description: User not found
  *       500:
- *         description: Error occurred while deleting user
- *
- */
-
-
+ *         description: Error occurred while deleting user 
+ * */

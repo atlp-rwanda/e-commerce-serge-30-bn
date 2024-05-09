@@ -4,6 +4,9 @@ import bcrypt from 'bcrypt';
 
 import { validate } from '../middleware/validators/schemaValidators';
 import { generateToken } from '../utils/jwt.utils';
+import { sendEmail } from '../helpers/TwoFactorAuth';
+import { UserService } from '../service/user.service';
+import { VerifyTokenService } from '../service/VerifyToken.service';
 export const forgotPassword = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
@@ -30,10 +33,9 @@ export const resetPassword = async (req: Request, res: Response) => {
   }
 };
 
-
 export const LogoutUsers = async (req: Request, res: Response) => {
   try {
-    res.clearCookie("Authorization");
+    res.clearCookie('Authorization');
     return res.status(200).send('Logout Successfully');
   } catch (error) {
     console.error('Logout error ', error);
@@ -92,4 +94,84 @@ export const Login = async (req: Request, res: Response) => {
     })
     .status(200)
     .json({ message: `${user.username} successfully logged in`, token });
+};
+export const sendEmailVerification = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const token = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(email);
+    const user = await UserService.findUserBy(email);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    let name;
+    if (user) {
+      name = user.dataValues.username;
+    }
+    const code = token;
+    await sendEmail('verification', { email, name, code });
+    const expirationDurationMs = 60 * 60 * 1000;
+    const currentTime = new Date();
+    const expirationTime = new Date(
+      currentTime.getTime() + expirationDurationMs,
+    );
+    expirationTime.setUTCHours(expirationTime.getUTCHours() + 2);
+
+    if (user) {
+      const tokenData = {
+        email,
+        token,
+        expirationTime,
+        user_id: user.dataValues.user_id,
+      };
+      await VerifyTokenService.createToken(tokenData);
+      console.log(user.dataValues.user_id);
+    }
+
+    res.status(200).json({ message: 'Verification email sent successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const verifyAuthenticationCode = async (req: Request, res: Response) => {
+  try {
+    const { email, code } = req.body;
+
+    const userEmail = await UserService.findUserBy(email);
+
+    if (!userEmail) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const token = await VerifyTokenService.findEmailAndToken(email, code);
+    if (!token) {
+      return res.status(404).json({ message: 'Token not found' });
+    }
+    const expirationTime = new Date(token.dataValues.expirationTime);
+    const currentTimePlusOneHour = new Date(Date.now() + 60 * 60 * 1000);
+    const isTokenExpired =
+      expirationTime.getTime() < currentTimePlusOneHour.getTime();
+
+    if (isTokenExpired || token.dataValues.used) {
+      return res.status(400).json({ message: 'Token has expired' });
+    }
+
+    console.log('Token is', token.dataValues.token, 'Code is', code);
+    const tokenValue = token.dataValues.token.toString();
+
+    const isCodeValid = tokenValue === code;
+    if (isCodeValid) {
+      res
+        .status(200)
+        .json({ message: 'Authentication code verified successfully' });
+      await token.update({ used: true });
+    } else {
+      res.status(400).json({ message: 'Invalid authentication code' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
