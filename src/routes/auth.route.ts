@@ -1,6 +1,11 @@
 import { Router } from 'express';
-import { Login, forgotPassword, resetPassword, updatePassword } from '../controllers';
-import { AuthSchema, validateSchema } from '../validations/auth.validation';
+import { Login, LogoutUsers, forgotPassword, resetPassword, sendEmailVerification, updatePassword, verifyAuthenticationCode } from '../controllers';
+import {
+  AuthSchema,
+  validateSchema,
+  EmailSchema,
+  EmailTokenSchema,
+} from '../validations/auth.validation';
 const authRoute = Router();
 
 
@@ -23,7 +28,15 @@ const authRoute = Router();
     updatePassword,
   );
   
-  authRoute.post('/auth/login', validateSchema(AuthSchema.login), Login);
+authRoute.post('/auth/login', validateSchema(AuthSchema.login), Login);
+  
+ authRoute.post(
+   '/auth/send-verification-email',
+   validateSchema(EmailSchema.email),
+   sendEmailVerification,
+ );
+ authRoute.get('/auth/logout', LogoutUsers);
+ authRoute.post('/auth/verify-authentication-code', validateSchema(EmailTokenSchema.emailToken),verifyAuthenticationCode); 
 
 export default authRoute;
 

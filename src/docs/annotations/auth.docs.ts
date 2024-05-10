@@ -208,3 +208,97 @@
 *       500:
 *         description: Internal server error
 */
+
+
+/**
+ * @openapi
+ * /api/v1/auth/send-verification-email:
+ *   post:
+ *     summary: Send email verification
+ *     description: Sends a verification email to the specified email address.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The user's email address.
+ *                 example: user@example.com
+ *     responses:
+ *       '200':
+ *         description: Verification email sent successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Verification email sent successfully.
+ *                   example: Verification email sent successfully
+ *       '400':
+ *         description: Bad request (e.g., email not found).
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message explaining the reason for the bad request.
+ *                   example: Email address not found
+ *     tags:
+ *       - auth
+ */
+/**
+ * @openapi
+ * /api/v1/auth/verify-authentication-code:
+ *   post:
+ *     summary: Verify authentication code
+ *     description: Verifies the authentication code provided by the user.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Email and authentication code for verification.
+ *                 example: user@gmail.com
+ *               code:
+ *                 type: string
+ *                 description: The authentication code received by the user.
+ *                 example: 12312312
+ *     responses:
+ *       '200':
+ *         description: Authentication code verified successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message indicating the password has been reset.
+ *                   example:  successful
+ *       '400':
+ *         description: Invalid authentication code or token has expired.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Invalid authentication code or token has expired.
+ *                   example: Token Expired
+ *       '500':
+ *           description: "*Internal server error*"
+ *     tags:
+ *       - auth
+ */
