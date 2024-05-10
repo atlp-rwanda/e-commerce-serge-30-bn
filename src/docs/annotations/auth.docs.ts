@@ -127,12 +127,12 @@
  */
 /**
  * @openapi
- * /api/v1/auth/{userId}/update-password:
+ * /api/v1/auth/{id}/update-password:
  *   put:
  *     summary: Change user password
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: id
  *         required: true
  *         schema:
  *           type: string
@@ -154,6 +154,8 @@
  *               confirmPassword:
  *                 type: string
  *                 description: Confirm new password
+ *     security:
+ *      - bearerAuth: []
  *     responses:
  *       '200':
  *         description: Password updated successfully

@@ -6,24 +6,23 @@ import {
   EmailSchema,
   EmailTokenSchema,
 } from '../validations/auth.validation';
+import { profileAuth } from '../utils/profile.auth';
 const authRoute = Router();
-
 
   authRoute.post(
     '/auth/forgot-password',
     validateSchema(AuthSchema.forgotPassword),
     forgotPassword,
   );
+  
   authRoute.post(
     '/auth/reset-password',
     validateSchema(AuthSchema.resetPassword),
     resetPassword,
   );
 
-
-  
   authRoute.put(
-    '/auth/:userId/update-password',
+    '/auth/:id/update-password', profileAuth,
     validateSchema(AuthSchema.updatePassword),
     updatePassword,
   );
@@ -39,6 +38,3 @@ authRoute.post('/auth/login', validateSchema(AuthSchema.login), Login);
  authRoute.post('/auth/verify-authentication-code', validateSchema(EmailTokenSchema.emailToken),verifyAuthenticationCode); 
 
 export default authRoute;
-
-
-
