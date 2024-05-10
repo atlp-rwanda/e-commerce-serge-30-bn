@@ -74,4 +74,16 @@ export class UserService {
       throw new Error('Could not Find user: ' + error);
     }
   }
+
+  public static async getUserById(user_id: string): Promise<User> {
+    try {
+      const user = await User.findOne({ where: { user_id } });
+      if (!user) {
+        throw new Error('User not found');
+      }
+      return user;
+    } catch (error) {
+      throw new Error('Internal Server Error');
+    }
+  }
 }

@@ -2,11 +2,9 @@ import { DataTypes, Model } from 'sequelize';
 import { development, production, testing } from '../db/config';
 import Profile from './profile.model';
 
-
 const isProduction = process.env.NODE_ENV === 'production';
 const isTesting = process.env.NODE_ENV === 'testing';
 const sequelize = isProduction ? production : isTesting ? testing : development;
-
 
 // eslint-disable-next-line no-shadow
 export enum UserRole {
@@ -16,20 +14,18 @@ export enum UserRole {
 }
 
 class User extends Model {
+  user_id!: string;
   username!: string;
   email!: string;
   password!: string;
   resetToken!: string | null;
   resetTokenExpiration!: string | null;
   verified!: boolean;
-  role!: UserRole
- 
-  
-  public static associate( 
-    models: { Profile: typeof Profile }){
-    User.hasOne(models.Profile); 
-  }
+  role!: UserRole;
 
+  public static associate(models: { Profile: typeof Profile }) {
+    User.hasOne(models.Profile);
+  }
 }
 
 User.init(
@@ -69,39 +65,39 @@ User.init(
     },
     firstname: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     lastname: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM("USER", "ADMIN", "VENDOR"),
+      type: DataTypes.ENUM('USER', 'ADMIN', 'VENDOR'),
       defaultValue: UserRole.USER,
-      allowNull:false
+      allowNull: false,
     },
     image_url: {
       type: DataTypes.STRING(255),
-      allowNull:true
+      allowNull: true,
     },
-     google_id: {
+    google_id: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     google_token: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
+      defaultValue: DataTypes.NOW,
     },
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW
-    }
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     tableName: 'users',
