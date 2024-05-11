@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Response} from 'express';
 import { ProductService } from '../service/product.service';
 import { CustomRequest } from '../middleware/authentication/auth.middleware';
 import { VendorService } from '../service/vendor.service';
@@ -102,6 +102,42 @@ export const productsController = {
         return res.status(500).json({ message: error.message });
       }
       return res.status(500).json({ message: 'Internal server error' });
+    }},
+   // Getting a single product by ID
+   async getProductById(req: CustomRequest, res: Response) {
+    try {
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ success: false, message: 'Unauthorized' });
+      }
+      const {product_id} = req.params;
+      let product = await ProductService.getProductById(product_id);
+      const role = req.user.role;
+      
+      if(role === "VENDOR"){
+        const vendor = await VendorService.getVendorByAuthenticatedUserId(req.user.user_id);
+        if (!vendor) {
+          return res.status(404).json({ message: 'Vendor not found' });
+        }
+       product = await ProductService.getProductByVendorId(product_id,vendor.vendor_id)
+      }
+      if(!product ){
+        return res.status(404).json({
+          success: false,
+          message: `${role === 'VENDOR'? 'Product not found in your collection' : 'Product not found' }`,
+        }); 
+      }
+       return res.status(200).json({
+        success: true,
+        message: 'Product retrieved successfully',
+        data: product,
+      });
+      }
+     catch (error: unknown) {
+      if (error instanceof Error) {
+        return res.status(500).json({ error: error.message });
+      }
     }
   },
 };

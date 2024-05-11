@@ -1,6 +1,7 @@
 import Vendor from '../models/vendor.model';
 import Product from '../models/products.Model';
 import { User } from 'models';
+import Category from '../models/products.Category.Model';
 
 export class ProductService {
   public static async createProduct(
@@ -73,5 +74,19 @@ export class ProductService {
     });
 
     return updatedItem;
+  }
+  public static async getProductById(
+    product_id: string,
+  ): Promise<Product | null> {
+ 
+      const product = await Product.findByPk(product_id,{include: [Vendor,Category]});
+      return product;
+  }
+  public static async getProductByVendorId(
+    product_id: string,vendor_id:string
+  ): Promise<Product | null> {
+
+      const product = await Product.findOne({where:{product_id:product_id,vendor_id:vendor_id},include: [Vendor,Category]});
+      return product;
   }
 }

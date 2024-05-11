@@ -1,12 +1,12 @@
 import express from 'express';
 import { productsController } from '../controllers/products.controller';
 import { isAuthenticated } from '../middleware/authentication/auth.middleware';
+import { isAuthorized } from '../middleware/user.authenticate';
+import { UserRole } from '../models/user.model';
 import {
   validateSchema,
   productSchema,
 } from '../validations/product.validation';
-import { isAuthorized } from '../middleware/user.authenticate';
-import { UserRole } from '../models/user.model';
 
 const productRoutes = express.Router();
 
@@ -23,5 +23,9 @@ productRoutes.patch(
   isAuthorized(UserRole.VENDOR),
   productsController.updateProduct,
 );
+
+productRoutes.get('/product/:product_id',
+isAuthenticated,
+productsController.getProductById)
 
 export default productRoutes;
