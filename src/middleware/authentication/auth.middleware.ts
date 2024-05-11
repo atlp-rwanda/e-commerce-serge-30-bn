@@ -18,6 +18,7 @@ export const isAuthenticated = async (
       res.status(401).send({
         message: 'No token provided',
       });
+      return;
     }
 
     const payload = verify(
@@ -29,6 +30,7 @@ export const isAuthenticated = async (
       res.status(401).send({
         message: 'Invalid token',
       });
+      return;
     }
 
     const decoded = payload.user;
@@ -37,6 +39,7 @@ export const isAuthenticated = async (
       res.status(401).send({
         message: 'User not found',
       });
+      return;
     }
 
     req.user = decoded;
@@ -47,5 +50,6 @@ export const isAuthenticated = async (
     res.status(401).send({
       message: 'Authentication failed',
     });
+    return;
   }
 };

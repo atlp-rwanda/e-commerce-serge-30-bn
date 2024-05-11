@@ -9,6 +9,7 @@ import { logger } from './config/Logger';
 import { production, development, testing } from './db/config';
 import session from 'express-session';
 import router from './routes/index';
+require('./associations/associations');
 
 dotenv.config();
 
