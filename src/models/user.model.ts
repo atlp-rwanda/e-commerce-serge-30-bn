@@ -20,6 +20,8 @@ class User extends Model {
   password!: string;
   resetToken!: string | null;
   resetTokenExpiration!: string | null;
+  emailVerificationToken!: string | null;
+  emailVerificationTokenExpiration!: string | null;
   verified!: boolean;
   role!: UserRole;
 
@@ -55,6 +57,16 @@ User.init(
       allowNull: true,
     },
     resetTokenExpiration: {
+      type: DataTypes.DATE,
+      defaultValue: null,
+      allowNull: true,
+    },
+    emailVerificationToken: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+      allowNull: true,
+    },
+    emailVerificationTokenExpiration: {
       type: DataTypes.DATE,
       defaultValue: null,
       allowNull: true,

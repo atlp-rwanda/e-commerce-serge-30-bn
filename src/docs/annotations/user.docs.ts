@@ -31,3 +31,46 @@
  *             example:
  *               message: Internal server error
  */
+/**
+ * @openapi
+ * /api/v1/resend-verification-token:
+ *   post:
+ *     summary: Resend Email verification Link
+ *     description: Re-sends a user an email verification link in case the first one was expired or lost.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The user's email address.
+ *                 example: user@example.com
+ *     responses:
+ *       '200':
+ *         description: Emaul verification link sent successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message indicating that the email verification link has been resent.
+ *                   example: An email verification link has been sent to your email
+ *       '400':
+ *         description: Bad request 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message explaining the reason for the bad request.
+ *                   example: Email address not found/user doesnt exist
+ *     tags:
+ *       - Users
+ */

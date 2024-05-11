@@ -1,8 +1,9 @@
 import { describe, expect, it, beforeAll, afterAll } from '@jest/globals';
 import request from 'supertest';
 import { server } from '../src/server';
-
-
+import jwt from 'jsonwebtoken'
+import User from '../src/models/user.model';
+import AuthService from '../src/service/auth.service';
 
 let token: string;
 let userId: string;
@@ -19,14 +20,15 @@ beforeAll(async () => {
       lastname: 'test',
     });
 
-  userId = responseCreate.body.data.user_id;
- 
-  // Login to obtain token
-  const loginResponse = await request(server)
-    .post('/api/v1/auth/login')
-    .send({ email: 'user@test.com', password: 'test123' });
+    const email = 'user@test.com';
+    const user = await AuthService.getUserByEmail(email);
 
-  token = loginResponse.body.token;
+    if(user){
+      const passwordRemoved = { ...user.toJSON(), password: undefined };
+      token = jwt.sign({ user: passwordRemoved }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
+    }
+
+    userId = responseCreate.body.data.user_id;  
 });
 
 describe('profile part - PUT ', () => {
@@ -125,9 +127,16 @@ describe('profile part - GET ', () => {
 });
 
 afterAll(async () => {
-  if (userId) {
-    await request(server).delete(`/api/v1/${userId}`).
-    set('Authorization', `Bearer ${token}`);
+  const createdUser = await User.findOne({
+    where: { email: 'user@test.com' },
+  });
+
+  if (createdUser) {
+    await createdUser.destroy();
   }
+  const deletedUser = await User.findOne({
+    where: { email: 'user@test.com' },
+  });
+  expect(deletedUser).toBeNull();
   server.close();
 });
