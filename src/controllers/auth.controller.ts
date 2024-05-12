@@ -43,12 +43,12 @@ export const LogoutUsers = async (req: Request, res: Response) => {
   }
 };
 export const updatePassword = async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const { id } = req.params;
   const { oldPassword, newPassword, confirmPassword } = req.body;
 
   try {
     // Check if the provided old password matches the one stored in the database
-    const passwordMatch = await AuthService.verifyPassword(userId, oldPassword);
+    const passwordMatch = await AuthService.verifyPassword(id, oldPassword);
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid old password' });
     }
@@ -59,7 +59,7 @@ export const updatePassword = async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await AuthService.updatePassword(userId, hashedPassword);
+    await AuthService.updatePassword(id, hashedPassword);
 
     return res.status(200).json({ message: 'Password updated successfully' });
   } catch (error) {
