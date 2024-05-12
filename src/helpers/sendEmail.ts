@@ -17,11 +17,8 @@ interface EmailOptions<T> {
     template?: (data: T) => string;
     attachmentPath?: string;
     isVerificationEmail?: boolean;
+    verificationUrl?: string;
 }
-
-const generateVerificationCode = () => {
-    return crypto.randomBytes(20).toString('hex');
-};
 
 const sendEmail = async <T>({
     to,
@@ -31,8 +28,9 @@ const sendEmail = async <T>({
     html,
     template,
     attachmentPath,
-    isVerificationEmail = false 
-}: EmailOptions<T>) => {
+    isVerificationEmail = false,
+    verificationUrl
+}:  EmailOptions<T> & { verificationUrl?: string }) => {
     if (!apiKey) {
         console.error('SENDGRID_API_KEY is not defined. Email not sent.');
         return;
@@ -76,9 +74,8 @@ const sendEmail = async <T>({
         }];
     }
 
-    if (isVerificationEmail) {
-        const verificationCode = generateVerificationCode();
-        const verificationLink = `https://{appdomain name}/verify-email?code=${verificationCode}`;
+    if (isVerificationEmail && verificationUrl) {
+        const verificationLink = verificationUrl
         messageData.html = verificationEmailTemplate(verificationLink);
 
         try {

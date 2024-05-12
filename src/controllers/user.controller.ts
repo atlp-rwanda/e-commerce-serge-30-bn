@@ -60,6 +60,45 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
+export const emailVerification = async(req: Request, res: Response) =>{
+  const token = req.params.userToken;
+
+  try {
+    if (!token) {
+      return res.status(400).json({ message: 'Token is missing' });
+    }
+
+    const message = await UserService.emailVerification(token);
+
+    // Handle the result as needed
+    return res.status(200).json({ message });
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(404).json({ message: error.message });
+    }
+  }
+
+}
+
+export const resendVerificationToken = async(req: Request, res: Response) =>{
+  const userEmail = req.body.email;
+
+  try {
+    if (!userEmail) {
+      return res.status(400).json({ message: 'Email address is missing in the request body' });
+    }
+
+    const message = await UserService.resendVerificationToken(userEmail);
+
+    return res.status(200).json({ message });
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(404).json({ message: error.message });
+    }
+  }
+
+}
+
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { username, email, password } = req.body;
