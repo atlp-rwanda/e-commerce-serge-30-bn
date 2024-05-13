@@ -2,6 +2,15 @@ import Vendor from '../models/vendor.model';
 import Product from '../models/products.Model';
 import { User } from 'models';
 import Category from '../models/products.Category.Model';
+import { Op, WhereOptions } from 'sequelize';
+
+
+interface SearchParams {
+  name?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  category?: string;
+}
 
 export class ProductService {
   public static async createProduct(
@@ -80,4 +89,45 @@ export class ProductService {
       const product = await Product.findOne({where:{product_id:product_id,vendor_id:vendor_id},include: [Vendor,Category]});
       return product;
   }
+
+  
+
+  static async searchProducts(criteria: SearchParams): Promise<Product[]>  {
+    const where: WhereOptions = {};
+
+    if (criteria.name) {
+      where.name = { [Op.like]: `%${criteria.name}%` };
+    }
+
+    if (criteria.minPrice !== undefined) {
+      where.price = { ...where.price, [Op.gte]: criteria.minPrice };
+   }
+
+    if (criteria.maxPrice !== undefined) {
+      where.price = { ...where.price, [Op.lte]: criteria.maxPrice };
+    }
+
+    if (criteria.category) {
+      const category = await Category.findOne({
+        where: { name: criteria.category },
+        attributes: ['category_id'],
+      });
+
+      if (category) {
+        where.category_id = category.category_id;
+      } else {
+        return [];
+      }
+    }
+
+    try {
+        const products = await Product.findAll({ where, });
+        return products;
+    } catch (error) {
+      console.error('Error in ProductService.searchProducts:', error);
+      const errorMessage = (error as Error).message;
+      throw new Error(`Failed to search products: ${errorMessage}`);
+    }
+}
+
 }
