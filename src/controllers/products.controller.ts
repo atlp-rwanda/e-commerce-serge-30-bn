@@ -67,9 +67,41 @@ export const productsController = {
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error(error);
         return res.status(500).json({ success: false, message: error.message });
       }
+    }
+  },
+  //update product with by id
+  async updateProduct(req: CustomRequest, res: Response) {
+    try {
+      const user = req.user;
+      if (!user) {
+        return res.status(201).json({ message: 'Unauthorized access denied' });
+      }
+
+      const { productId } = req.params;
+      const uuidRegex =
+        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
+      if (!uuidRegex.test(productId)) {
+        return res.status(400).json({ message: 'Invalid product id' });
+      }
+
+      const updatedProduct = await ProductService.updateProduct(
+        user,
+        productId,
+        req.body,
+      );
+
+      return res.send({
+        success: true,
+        message: 'Product updated successfully',
+        product: updatedProduct,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(500).json({ message: error.message });
+      }
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
 };

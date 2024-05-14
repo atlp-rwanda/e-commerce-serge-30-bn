@@ -21,7 +21,7 @@ export const isAuthenticated = async (
 
     if (!authorizationCookie) {
       res.status(401).send({
-        message: 'No token provided',
+        message: 'No token provided'
       });
       return;
     }

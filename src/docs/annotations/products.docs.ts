@@ -127,3 +127,87 @@
  *                   type: string
  *                   example: You do not have permission to add a product on this platform.
  */
+
+/**
+ * @openapi
+ * /api/v1/product/{productId}:
+ *   patch:
+ *     summary: Create a new product
+ *     description: Creates a new product if the user has vendor permissions.
+ *     tags:
+ *       - Products
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *        - name: productId
+ *          in: path
+ *          description: The unique identifier of the product.
+ *          required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               category_name:
+ *                 type: string
+ *               expiry_date:
+ *                 type: string
+ *                 format: date-time
+ *               image_url:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               quantity:
+ *                 type: integer
+ *               discount:
+ *                 type: integer
+ *     responses:
+ *       '201':
+ *         description: Product created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Product created successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/Product'
+ *       '400':
+ *         description: The product with this name already exists in your store. Consider updating it instead.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: The product with this name already exists in your store. Consider updating it instead.
+ *                 data:
+ *                   $ref: '#/components/schemas/Product'
+ *       '403':
+ *         description: Forbidden (user does not have permission to add a product)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: You do not have permission to add a product on this platform.
+ */

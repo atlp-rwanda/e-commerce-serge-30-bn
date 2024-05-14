@@ -5,6 +5,8 @@ import {
   validateSchema,
   productSchema,
 } from '../validations/product.validation';
+import { isAuthorized } from '../middleware/user.authenticate';
+import { UserRole } from '../models/user.model';
 
 const productRoutes = express.Router();
 
@@ -13,6 +15,13 @@ productRoutes.post(
   validateSchema(productSchema.product),
   isAuthenticated,
   productsController.createProduct,
+);
+productRoutes.patch(
+  '/product/:productId',
+  validateSchema(productSchema.update),
+  isAuthenticated,
+  isAuthorized(UserRole.VENDOR),
+  productsController.updateProduct,
 );
 
 export default productRoutes;
