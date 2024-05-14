@@ -2,6 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
 import user from '../../models/user.model';
 
+declare global {
+  export interface CustomRequest extends Request {
+    user?: user;
+  }
+}
 export interface CustomRequest extends Request {
   user?: user;
 }
@@ -18,6 +23,7 @@ export const isAuthenticated = async (
       res.status(401).send({
         message: 'No token provided',
       });
+      return;
     }
 
     const payload = verify(
@@ -29,6 +35,7 @@ export const isAuthenticated = async (
       res.status(401).send({
         message: 'Invalid token',
       });
+      return;
     }
 
     const decoded = payload.user;
@@ -37,6 +44,7 @@ export const isAuthenticated = async (
       res.status(401).send({
         message: 'User not found',
       });
+      return;
     }
 
     req.user = decoded;
@@ -45,7 +53,8 @@ export const isAuthenticated = async (
   } catch (e) {
     console.error(e);
     res.status(401).send({
-      message: 'Authentication failed',
+      message: 'Unauthorized access: token has expired or malformed',
     });
+    return;
   }
 };
