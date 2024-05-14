@@ -1,17 +1,20 @@
-import Joi from "joi";
-import { Request, Response, NextFunction } from 'express';
+import Joi from 'joi';
 
-export const validateSchema = (schema: Joi.ObjectSchema) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const { error } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.message });
-    }
-    next();
-  };
+export const cartSchema = {
+  addItem: Joi.object({
+    productid: Joi.string().required(),
+    quantity: Joi.number().integer().positive().required(),
+  }),
+  updateItem: Joi.object({
+    productId: Joi.string().required().messages({
+      'string.empty': 'Product ID cannot be an empty string',
+      'string.base': 'Product ID must be a string',
+      'any.required': 'Product ID is required',
+    }),
+    quantity: Joi.number().integer().required().messages({
+      'number.base': 'Quantity must be a number',
+      'number.integer': 'Quantity must be an integer',
+      'any.required': 'Quantity is required',
+    }),
+  }),
 };
-
-export const dataSchema = Joi.object({
-  productid: Joi.string().required(),
-  quantity: Joi.number().integer().positive().required(),
-});
