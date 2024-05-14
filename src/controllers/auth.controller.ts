@@ -4,9 +4,24 @@ import bcrypt from 'bcrypt';
 
 import { validate } from '../middleware/validators/schemaValidators';
 import { generateToken } from '../utils/jwt.utils';
-import { sendEmail } from '../helpers/TwoFactorAuth';
 import { UserService } from '../service/user.service';
 import { VerifyTokenService } from '../service/VerifyToken.service';
+import { sendEmail } from '../helpers/sendEmail';
+import { twoFactorAuthEmailTemplate } from '../helpers/EmailTemplates/twoFactorAuthEmailTemplate';
+export interface TokenDataProp {
+  email?: string;
+  name?: string;
+  code?: string;
+}
+interface EmailOptions {
+  to: string | string[];
+  from: string;
+  subject: string;
+  template: (data: TokenDataProp) => string;
+  isVerificationEmail?: boolean;
+  verificationUrl?: string;
+}
+const fromEmail = process.env.FROM_EMAIL;
 export const forgotPassword = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
@@ -113,7 +128,21 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
       name = user.dataValues.username;
     }
     const code = token;
-    await sendEmail('verification', { email, name, code });
+    const TokenData: TokenDataProp = {
+      email,
+      name,
+      code,
+    };
+    if (fromEmail) {
+      const emailOptions: EmailOptions = {
+        to: email,
+        from: fromEmail,
+        subject: 'Verification Code',
+        template: () => twoFactorAuthEmailTemplate(TokenData),
+      };
+      const response = await sendEmail(emailOptions);
+      console.log("response" , response)
+    }
     const expirationDurationMs = 60 * 60 * 1000;
     const currentTime = new Date();
     const expirationTime = new Date(
