@@ -1,5 +1,6 @@
 import Vendor from '../models/vendor.model';
 import Product from '../models/products.Model';
+import { User } from 'models';
 
 export class ProductService {
   public static async createProduct(
@@ -46,5 +47,31 @@ export class ProductService {
     } catch (error) {
       throw new Error('Internal Server Error');
     }
+  }
+  public static async updateProduct(
+    user: User,
+    productId: string,
+    updateData: Partial<User>,
+  ) {
+    const getVendor = await Vendor.findOne({
+      where: { user_id: user.user_id },
+    });
+    if (!getVendor) {
+      throw new Error('Vendor not found');
+    }
+
+    const getProduct = await Product.findOne({
+      where: { product_id: productId, vendor_id: getVendor.vendor_id },
+    });
+    if (!getProduct) {
+      throw new Error('This product is not found in your collection');
+    }
+
+    const updatedItem = await Product.update(updateData, {
+      where: { product_id: productId },
+      returning: true,
+    });
+
+    return updatedItem;
   }
 }
