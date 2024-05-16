@@ -44,7 +44,7 @@ verifytokens.init(
   },
   {
     sequelize,
-    tableName: 'VerifyToken',
+    tableName: 'verifytokens',
   },
 );
 verifytokens.belongsTo(User, {

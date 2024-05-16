@@ -1,6 +1,5 @@
 import sendGrid, { MailDataRequired } from '@sendgrid/mail';
 import dotenv from 'dotenv';
-import crypto from 'crypto';
 import fs from 'fs';
 import { verificationEmailTemplate } from './EmailTemplates/emailVerificationTemplate';
 
