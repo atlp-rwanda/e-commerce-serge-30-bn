@@ -56,7 +56,7 @@
 
 /**
  * @openapi
- * /api/v1/categories:
+ * /api/v1/categories/all:
  *   get:
  *     summary: Get all product categories
  *     description: Retrieves all product categories.
@@ -173,8 +173,19 @@
  *           type: string
  *         description: ID of the product category to delete
  *     responses:
- *       '204':
+ *       '200':
  *         description: Category deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Category deleted successfully
  *       '500':
  *         description: Internal server error
  *         content:

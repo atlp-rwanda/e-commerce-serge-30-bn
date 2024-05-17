@@ -6,47 +6,39 @@ export class CategoryService {
     name: string,
     description: string,
   ): Promise<Category> {
-    try {
-      const category = await Category.create({ name, description });
-      return category;
-    } catch (error) {
-      throw new Error('Internal Server Error');
+    const existingCategory = await Category.findOne({ where: { name } });
+    if (existingCategory) {
+      throw new Error('Category with this name already exists');
     }
+    const category = await Category.create({ name, description });
+    return category;
   }
 
   public static async getAllCategories(): Promise<Category[]> {
-    try {
-      const categories = await Category.findAll({ include: [Product] });
-      return categories;
-    } catch (error) {
-      throw new Error('Internal Server Error');
+    const categories = await Category.findAll({ include: [Product] });
+    if (!categories) {
+      throw new Error('No Category was Found');
     }
+    return categories;
   }
 
   public static async getCategoryById(category_id: string): Promise<Category> {
-    try {
-      const category = await Category.findByPk(category_id, {
-        include: [Product],
-      });
-      if (!category) {
-        throw new Error('Category not found');
-      }
-      return category;
-    } catch (error) {
-      throw new Error('Internal Server Error');
+    const category = await Category.findOne({
+      where: { category_id },
+      include: [Product],
+    });
+    if (!category) {
+      throw new Error('Category not found');
     }
+    return category;
   }
 
   public static async getCategoryByName(name: string): Promise<Category> {
-    try {
-      const category = await Category.findOne({ where: { name } });
-      if (!category) {
-        throw new Error('Category not found');
-      }
-      return category;
-    } catch (error) {
-      throw new Error('Internal Server Error');
+    const category = await Category.findOne({ where: { name } });
+    if (!category) {
+      throw new Error('Category not found');
     }
+    return category;
   }
 
   public static async updateCategory(
@@ -54,29 +46,21 @@ export class CategoryService {
     name: string,
     description: string,
   ): Promise<Category> {
-    try {
-      const category = await Category.findByPk(category_id);
-      if (!category) {
-        throw new Error('Category not found');
-      }
-      category.name = name;
-      category.description = description;
-      await category.save();
-      return category;
-    } catch (error) {
-      throw new Error('Internal Server Error');
+    const category = await Category.findByPk(category_id);
+    if (!category) {
+      throw new Error('Category not found');
     }
+    category.name = name;
+    category.description = description;
+    await category.save();
+    return category;
   }
 
   public static async deleteCategory(category_id: string): Promise<void> {
-    try {
-      const category = await Category.findByPk(category_id);
-      if (!category) {
-        throw new Error('Category not found');
-      }
-      await category.destroy();
-    } catch (error) {
-      throw new Error('Internal Server Error');
+    const category = await Category.findOne({ where: { category_id } });
+    if (!category) {
+      throw new Error('Category not found');
     }
+    await Category.destroy({ where: { category_id } });
   }
 }

@@ -14,10 +14,11 @@ export const vendorController = {
       }
       const { user_id } = req.user;
       const user = await UserService.getUserById(user_id);
-      if (!user || !user.verified || user.role.toString() !== 'VENDOR') {
-        return res
-          .status(400)
-          .json({ success: false, message: 'Invalid user' });
+      if (!user || !user.verified) {
+        return res.status(400).json({
+          success: false,
+          message: 'You do not have full permissions to become a vendor',
+        });
       }
       const vendor = await VendorService.createVendor(
         store_name,
@@ -30,15 +31,31 @@ export const vendorController = {
         data: vendor,
       });
     } catch (error: unknown) {
+      if (
+        (error as Error).message === 'Vendor with this user_id already exists'
+      ) {
+        return res.status(409).json({
+          success: false,
+          message:
+            "This account is already associated with an existing vendor account. You can't create multiple vendor accounts with the same account.",
+        });
+      }
       if (error instanceof Error) {
+        console.log(error);
         return res.status(500).json({ success: false, message: error.message });
       }
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
 
   async getAllVendors(req: CustomRequest, res: Response) {
     try {
       const vendors = await VendorService.getAllVendors();
+      if (!vendors || vendors.length === 0) {
+        return res
+          .status(404)
+          .json({ success: false, message: 'No vendors found' });
+      }
       return res.status(200).json({
         success: true,
         message: 'Vendors retrieved successfully',
@@ -49,12 +66,18 @@ export const vendorController = {
         console.log(error);
         return res.status(500).json({ success: false, message: error.message });
       }
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
 
   async getVendorById(req: CustomRequest, res: Response) {
     try {
       const { vendor_id } = req.params;
+      if (!vendor_id) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'Vendor ID is required' });
+      }
       const vendor = await VendorService.getVendorById(vendor_id);
       if (!vendor) {
         return res
@@ -68,8 +91,10 @@ export const vendorController = {
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
+        console.log(error);
         return res.status(500).json({ success: false, message: error.message });
       }
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
 
@@ -94,8 +119,10 @@ export const vendorController = {
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
+        console.log(error);
         return res.status(500).json({ success: false, message: error.message });
       }
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
 
@@ -104,13 +131,14 @@ export const vendorController = {
       const { vendor_id } = req.params;
       await VendorService.deleteVendor(vendor_id);
       return res
-        .status(204)
+        .status(200)
         .json({ success: true, message: 'Vendor deleted successfully' });
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log(error);
         return res.status(500).json({ success: false, message: error.message });
       }
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
 };

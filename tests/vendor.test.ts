@@ -105,7 +105,7 @@ describe('Vendor Controller', () => {
       req.params = { vendor_id: 'testvendor' };
       await vendorController.deleteVendor(req as Request, res as Response);
 
-      expect(res.status).toHaveBeenCalledWith(204);
+      expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         success: true,
         message: 'Vendor deleted successfully',
