@@ -23,7 +23,10 @@ class User extends Model {
   emailVerificationToken!: string | null;
   emailVerificationTokenExpiration!: string | null;
   verified!: boolean;
+  active!: boolean; 
   role!: UserRole;
+  firstname!: string;
+  lastname!: string;
 
   public static associate(models: { Profile: typeof Profile }) {
     User.hasOne(models.Profile);
@@ -74,6 +77,10 @@ User.init(
     verified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
     firstname: {
       type: DataTypes.STRING,
