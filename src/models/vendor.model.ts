@@ -6,10 +6,12 @@ const isTesting = process.env.NODE_ENV === 'testing';
 const sequelize = isProduction ? production : isTesting ? testing : development;
 
 class Vendor extends Model {
-  vendor_id!: string;
-  store_name!: string;
-  store_description!: string;
-  user_id!: string;
+  public vendor_id!: string;
+  public store_name!: string;
+  public store_description!: string;
+  public user_id!: string;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
 Vendor.init(
@@ -19,6 +21,7 @@ Vendor.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
       allowNull: false,
+      onDelete: 'CASCADE',
     },
     user_id: {
       type: DataTypes.UUID,
@@ -27,6 +30,7 @@ Vendor.init(
         model: 'users',
         key: 'user_id',
       },
+      onDelete: 'CASCADE',
     },
     store_name: {
       type: DataTypes.STRING,
@@ -38,9 +42,10 @@ Vendor.init(
     },
   },
   {
-    timestamps: true,
-    tableName: 'vendors',
     sequelize,
+    modelName: 'Vendors',
+    tableName: 'vendors',
+    timestamps: true,
   },
 );
 

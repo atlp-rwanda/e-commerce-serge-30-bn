@@ -17,7 +17,11 @@ Vendor.belongsTo(User, {
 });
 
 // Establishing one-to-Many relationshipt between a Vendor and Products
-Vendor.hasMany(Product, { foreignKey: 'vendor_id' });
+Vendor.hasMany(Product, {
+  foreignKey: 'vendor_id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+});
 Product.belongsTo(Vendor, {
   foreignKey: 'vendor_id',
   onDelete: 'CASCADE',
@@ -27,6 +31,8 @@ Product.belongsTo(Vendor, {
 // Establishing one-to-Many relationship between Category and Products
 Category.hasMany(Product, {
   foreignKey: 'category_id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
 });
 Product.belongsTo(Category, {
   foreignKey: 'category_id',

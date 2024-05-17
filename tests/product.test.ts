@@ -29,11 +29,10 @@ describe('PATCH /product/:productId', () => {
   it('should return 400 for invalid product ID', async () => {
     const productId = 'invalid-product-id';
 
-
     const response = await request(app)
       .patch(`/api/v1/product/${productId}`)
       .set('Cookie', `Authorization=${token}`)
-      .send({name:"product name"});
+      .send({ name: 'product name' });
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('message', 'Invalid product id');
@@ -45,7 +44,7 @@ describe('PATCH /product/:productId', () => {
     const response = await request(app)
       .patch(`/api/v1/product/${productId}`)
       .set('Cookie', `Authorization=${token}`)
-      .send({name:'test product'});
+      .send({ name: 'test product' });
     expect(response.body).toHaveProperty(
       'message',
       'This product is not found in your collection',

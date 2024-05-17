@@ -21,7 +21,7 @@ export const isAuthenticated = async (
 
     if (!authorizationCookie) {
       res.status(401).send({
-        message: 'No token provided'
+        message: 'Unauthenticated access: missing token',
       });
       return;
     }
@@ -53,7 +53,7 @@ export const isAuthenticated = async (
   } catch (e) {
     console.error(e);
     res.status(401).send({
-      message: 'Unauthorized access: token has expired or malformed',
+      message: 'Unauthorized access: token has expired or it is malformed',
     });
     return;
   }

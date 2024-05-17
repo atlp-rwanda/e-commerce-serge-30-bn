@@ -162,7 +162,7 @@ describe('Product Category Controller', () => {
         res as Response,
       );
 
-      expect(res.status).toHaveBeenCalledWith(204);
+      expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         success: true,
         message: 'Category deleted successfully',

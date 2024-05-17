@@ -14,6 +14,7 @@ productRoutes.post(
   '/product/create',
   validateSchema(productSchema.product),
   isAuthenticated,
+  isAuthorized(UserRole.VENDOR),
   productsController.createProduct,
 );
 productRoutes.patch(

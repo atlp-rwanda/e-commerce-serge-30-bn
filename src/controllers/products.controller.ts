@@ -17,6 +17,7 @@ export const productsController = {
         quantity,
         discount,
       } = req.body;
+
       if (!req.user) {
         return res
           .status(401)
@@ -67,8 +68,10 @@ export const productsController = {
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
+        console.log(error);
         return res.status(500).json({ success: false, message: error.message });
       }
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
   //update product with by id

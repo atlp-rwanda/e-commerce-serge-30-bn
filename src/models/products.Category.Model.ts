@@ -6,9 +6,11 @@ const isTesting = process.env.NODE_ENV === 'testing';
 const sequelize = isProduction ? production : isTesting ? testing : development;
 
 class Category extends Model {
-  category_id!: string;
-  name!: string;
-  description!: string;
+  public category_id!: string;
+  public name!: string;
+  public description!: string;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
 Category.init(
@@ -18,6 +20,7 @@ Category.init(
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       primaryKey: true,
+      onDelete: 'CASCADE',
     },
     name: {
       type: DataTypes.STRING,
@@ -29,8 +32,8 @@ Category.init(
     },
   },
   {
-    tableName: 'categories',
     sequelize,
+    tableName: 'categories',
     timestamps: true,
   },
 );

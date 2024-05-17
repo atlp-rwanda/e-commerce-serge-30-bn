@@ -87,6 +87,60 @@
 
 /**
  * @openapi
+ * /api/v1/vendors/all:
+ *   get:
+ *     summary: Get all vendors
+ *     description: Retrieves all vendors.
+ *     tags:
+ *       - Vendors
+ *     responses:
+ *       '200':
+ *         description: Vendors retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Vendors retrieved successfully
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Vendor'
+ *       '404':
+ *         description: No vendors found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: No vendors found
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+
+/**
+ * @openapi
  * /api/v1/vendors/{vendor_id}:
  *   get:
  *     summary: Get a vendor by ID

@@ -6,16 +6,18 @@ const isTesting = process.env.NODE_ENV === 'testing';
 const sequelize = isProduction ? production : isTesting ? testing : development;
 
 class Product extends Model {
-  product_id!: string;
-  category_id!: string;
-  vendor_id!: string;
-  name!: string;
-  description!: string;
-  price!: number;
-  quantity!: number;
-  image_url!: string[];
-  discount!: number;
-  expiry_date!: Date;
+  public product_id!: string;
+  public category_id!: string;
+  public vendor_id!: string;
+  public name!: string;
+  public description!: string;
+  public price!: number;
+  public quantity!: number;
+  public image_url!: string[];
+  public discount!: number;
+  public expiry_date!: Date;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
 Product.init(
@@ -25,6 +27,7 @@ Product.init(
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       primaryKey: true,
+      onDelete: 'CASCADE',
     },
     vendor_id: {
       type: DataTypes.UUID,
@@ -33,7 +36,7 @@ Product.init(
         model: 'vendors',
         key: 'vendor_id',
       },
-      field: 'vendor_id',
+      onDelete: 'CASCADE',
     },
     category_id: {
       type: DataTypes.UUID,
@@ -42,7 +45,7 @@ Product.init(
         model: 'categories',
         key: 'category_id',
       },
-      field: 'category_id',
+      onDelete: 'CASCADE',
     },
     name: {
       type: DataTypes.STRING,
@@ -75,8 +78,9 @@ Product.init(
     },
   },
   {
-    tableName: 'products',
     sequelize,
+    modelName: 'Product',
+    tableName: 'products',
     timestamps: true,
   },
 );
