@@ -8,7 +8,7 @@ import categoryRoutes from './products.category.routes';
 import productRoutes from './products.routes';
 import vendorRoutes from './vendor.routes';
 import wishListRoute from './whishlist.route';
-
+import cartRoute from './cart.route';
 
 const router = Router();
 const routers: Router[] = [
@@ -21,6 +21,7 @@ const routers: Router[] = [
   categoryRoutes,
   productRoutes,
   vendorRoutes,
+  cartRoute
 ]
 router.use('/api/v1', routers);
 export default router;

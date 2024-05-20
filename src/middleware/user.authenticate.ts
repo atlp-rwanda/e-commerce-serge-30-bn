@@ -6,12 +6,12 @@ import User, { UserRole } from "../models/user.model";
 import { JsonWebTokenError } from 'jsonwebtoken';
 dotenv.config();
 
-export interface CustomRequest extends Request {
+export interface RequestUser extends Request {
   user?: User;
 }
 
 export const isAuthorized = (...roles:UserRole[]) => {
-  return async (req: CustomRequest, res: Response, next: NextFunction) => {
+  return async (req: RequestUser, res: Response, next: NextFunction) => {
 
     try {
       const authorizationCookie = req.cookies['Authorization'];
@@ -21,6 +21,7 @@ export const isAuthorized = (...roles:UserRole[]) => {
         secretKey || '',
       ) as { user: User };
       const user = decoded.user;
+      req.user = user;
       
       switch (true) {
         case !authorizationCookie:

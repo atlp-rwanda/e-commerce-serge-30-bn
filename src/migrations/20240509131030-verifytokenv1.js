@@ -36,6 +36,10 @@ module.exports = {
         type: Sequelize.DataTypes.DATE,
         allowNull: true,
       },
+      updatedAt: {
+        type: Sequelize.DataTypes.DATE,
+        allowNull: true,
+      },
       user_id: {
         type: Sequelize.DataTypes.UUID,
         allowNull: false,

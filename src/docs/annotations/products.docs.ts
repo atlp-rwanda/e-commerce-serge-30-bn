@@ -130,6 +130,81 @@
 
 /**
  * @openapi
+ * /api/v1/product/{product_id}:
+ *   get:
+ *     summary: Get product by ID
+ *     description: Retrieve a product by its ID. Requires authentication.
+ *     tags:
+ *       - Products
+ *     parameters:
+ *        - name: product_id
+ *          in: path
+ *          description: The ID of the product to retrieve.
+ *          required: true
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Product retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Product retrieved successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/Product'
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       '404':
+ *         description: Product or Vendor not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     productNotFound:
+ *                       summary: Product not found
+ *                       value: Product not found
+ *                     vendorNotFound:
+ *                       summary: Vendor not found
+ *                       value: Vendor not found
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An unexpected error occurred
+ */
+
+/**
+ * @openapi
  * /api/v1/product/{productId}:
  *   patch:
  *     summary: Create a new product
