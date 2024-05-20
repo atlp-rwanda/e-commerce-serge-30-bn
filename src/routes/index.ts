@@ -9,6 +9,7 @@ import productRoutes from './products.routes';
 import vendorRoutes from './vendor.routes';
 import wishListRoute from './whishlist.route';
 import cartRoute from './cart.route';
+import searchRoutes from './productSearch.router';
 
 const router = Router();
 const routers: Router[] = [
@@ -21,7 +22,9 @@ const routers: Router[] = [
   categoryRoutes,
   productRoutes,
   vendorRoutes,
-  cartRoute
-]
+  cartRoute,
+  searchRoutes
+];
+
 router.use('/api/v1', routers);
 export default router;
