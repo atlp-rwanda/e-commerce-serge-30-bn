@@ -8,6 +8,7 @@ import {
   productSchema,
 } from '../validations/product.validation';
 
+
 const productRoutes = express.Router();
 
 productRoutes.post(
@@ -28,5 +29,6 @@ productRoutes.patch(
 productRoutes.get('/product/:product_id',
 isAuthenticated,
 productsController.getProductById)
+productRoutes.get('/products/all',isAuthenticated,productsController.getAllProducts);
 
 export default productRoutes;

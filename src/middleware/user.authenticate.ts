@@ -9,7 +9,6 @@ dotenv.config();
 export interface RequestUser extends Request {
   user?: User;
 }
-
 export const isAuthorized = (...roles:UserRole[]) => {
   return async (req: RequestUser, res: Response, next: NextFunction) => {
 

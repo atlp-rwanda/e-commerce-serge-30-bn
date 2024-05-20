@@ -39,4 +39,8 @@ const testing = new Sequelize(
     // },
   },
 );
-export { development, production, testing };
+const isProduction = process.env.NODE_ENV === 'production';
+const isTesting = process.env.NODE_ENV === 'testing';
+const sequelize = isProduction ? production : isTesting ? testing : development;
+
+export { sequelize, development, production, testing };
