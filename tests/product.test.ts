@@ -100,7 +100,24 @@ describe('GET /api/v1/product/:productId', () => {
       });
     })
   });
-  
-  afterAll(() => {
-    server.close();
+describe('GET /api/v1/product/all', () => {
+  it('should require authentication', async () => {// Replace with a valid product ID
+    const response = await request(app)
+      .get(`/api/v1/product/all`)
+      .send();
+
+    expect(response.status).toBe(401);
   });
+  it("should get all products in the table", async () => {
+    const res = await request(app)
+    .get("/api/v1/products/all")
+    .set('Cookie', `Authorization=${token}`)
+    
+  expect(res.statusCode).toBe(200);
+    
+  });
+});
+
+afterAll(async () => {
+  server.close();
+});

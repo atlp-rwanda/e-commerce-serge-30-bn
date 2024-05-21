@@ -74,6 +74,36 @@ export class ProductService {
     });
 
     return updatedItem;
+  };
+  public static async getProductsByVendorId(vendor_id: string): Promise<Product[]> {
+    try {
+      const products = await Product.findAll({
+        where:{vendor_id},
+        include: [
+          Category,
+          Vendor
+        ]
+      })
+      return products;
+    } catch (error) {
+      throw new Error('Internal Server Error');
+    }
+  }
+  public static async UsergetAllProducts(): Promise<Product[]> {
+    try {
+      const products = await Product.findAll(
+        { where: {
+        available: true
+      },
+        include: [
+          Category,
+          Vendor
+        ]
+      })
+      return products;
+    } catch (error) {
+      throw new Error('Internal Server Error');
+    }
   }
   public static async getProductById(
     product_id: string,

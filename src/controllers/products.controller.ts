@@ -143,4 +143,37 @@ export const productsController = {
       }
     }
   },
+  async getAllProducts(req: CustomRequest, res: Response) {
+    try {
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ success: false, message: 'Unauthorized' });
+      }
+      let products = await ProductService.UsergetAllProducts();
+      const role = req.user.role;
+
+      if(req.user.role === "VENDOR"){
+      const vendor = await VendorService.getVendorByAuthenticatedUserId(req.user.user_id);
+      if (!vendor) {
+        return res.status(404).json({ message: 'Vendor not found' });
+      }
+       products = await ProductService.getProductsByVendorId(vendor.vendor_id);
+    }
+    if(!products){
+      return res.status(404).json({
+        success: false,
+        message: `${role === 'VENDOR'? 'Products not found in your collection' : 'Products not found' }`,
+      });
+    }
+      return res.status(200).json({
+        success: true,
+        message: 'Products retrieved successfully',
+        data: products,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  },
 };
