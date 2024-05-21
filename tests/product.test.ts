@@ -6,6 +6,7 @@ dotenv.config();
 const app = configureApp();
 
 let token: string | undefined;
+const product_Id = process.env.PRODUCT_ID;
 
 beforeEach(async () => {
   const loginResponse = await request(app).post('/api/v1/auth/login').send({
@@ -67,57 +68,68 @@ describe('PATCH /product/:productId', () => {
 });
 
 describe('GET /api/v1/product/:productId', () => {
-    it('should require authentication', async () => {
-      const productId = 'valid-product-id'; // Replace with a valid product ID
-      const response = await request(app)
-        .get(`/api/v1/product/${productId}`)
-        .send();
-  
-      expect(response.status).toBe(401);
-    });
-    it("should return specific product by id", async () => {
-      const res = await request(app)
-      .get("/api/v1/product/c8903a64-f93c-4de1-baa0-6b02b0ca5518")
-      .set('Cookie', `Authorization=${token}`)
-      .send()
-
-      expect(res.statusCode).toBe(200);
-      
-    });
-  
-    it('should return 404 when product is not found', async () =>{
-      const productId = '95c04254-b7e0-4bc4-b5c4-970213660cb5';
-      const role= 'VENDOR';
-      const response = await request(app)
-      .get(`/api/v1/product/${productId}`)
-      .set('Cookie', `Authorization=${token}`)
-      .send()
-
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({
-        success: false,
-        message: `${role === 'VENDOR'? 'Product not found in your collection' : 'Product not found' }`
-      });
-    })
-  });
-describe('GET /api/v1/product/all', () => {
-  it('should require authentication', async () => {// Replace with a valid product ID
+  it('should require authentication', async () => {
+    const productId = 'valid-product-id';
     const response = await request(app)
-      .get(`/api/v1/product/all`)
+      .get(`/api/v1/product/${productId}`)
       .send();
 
     expect(response.status).toBe(401);
   });
-  it("should get all products in the table", async () => {
+  it('should return specific product by id', async () => {
     const res = await request(app)
-    .get("/api/v1/products/all")
-    .set('Cookie', `Authorization=${token}`)
-    
-  expect(res.statusCode).toBe(200);
-    
+      .get('/api/v1/product/c8903a64-f93c-4de1-baa0-6b02b0ca5518')
+      .set('Cookie', `Authorization=${token}`)
+      .send();
+
+    expect(res.statusCode).toBe(200);
+  });
+
+  it('should return 404 when product is not found', async () => {
+    const productId = '95c04254-b7e0-4bc4-b5c4-970213660cb5';
+    const role = 'VENDOR';
+    const response = await request(app)
+      .get(`/api/v1/product/${productId}`)
+      .set('Cookie', `Authorization=${token}`)
+      .send();
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      success: false,
+      message: `${role === 'VENDOR' ? 'Product not found in your collection' : 'Product not found'}`,
+    });
   });
 });
 
-afterAll(async () => {
+describe('GET /api/v1/product/all', () => {
+  it('should require authentication', async () => {
+    // Replace with a valid product ID
+    const response = await request(app).get(`/api/v1/product/all`).send();
+
+    expect(response.status).toBe(401);
+  });
+  it('should get all products in the table', async () => {
+    const res = await request(app)
+      .get('/api/v1/products/all')
+      .set('Cookie', `Authorization=${token}`);
+
+    expect(res.statusCode).toBe(200);
+  });
+});
+
+describe('DELETE /api/v1/product/:productId', () => {
+  it('should require token/loging in', async () => {
+    const response = await request(app).DELETE(`/api/v1/product/${product_Id}`);
+    expect(response.status).toBe(401);
+  });
+  it('should not delete from others collection', async () => {
+    const res = await request(app)
+      .get('/api/v1/product/c8903a64-f93c-4de1-baa0-6b02b0ca5518')
+      .set('Cookie', `Authorization=${token}`);
+    expect(res.statusCode).toBe(400);
+  });
+});
+
+afterAll(() => {
   server.close();
 });

@@ -4,7 +4,6 @@ import { User } from 'models';
 import Category from '../models/products.Category.Model';
 import { Op, WhereOptions } from 'sequelize';
 
-
 interface SearchParams {
   name?: string;
   minPrice?: number;
@@ -74,16 +73,15 @@ export class ProductService {
     });
 
     return updatedItem;
-  };
-  public static async getProductsByVendorId(vendor_id: string): Promise<Product[]> {
+  }
+  public static async getProductsByVendorId(
+    vendor_id: string,
+  ): Promise<Product[]> {
     try {
       const products = await Product.findAll({
-        where:{vendor_id},
-        include: [
-          Category,
-          Vendor
-        ]
-      })
+        where: { vendor_id },
+        include: [Category, Vendor],
+      });
       return products;
     } catch (error) {
       throw new Error('Internal Server Error');
@@ -91,15 +89,12 @@ export class ProductService {
   }
   public static async UsergetAllProducts(): Promise<Product[]> {
     try {
-      const products = await Product.findAll(
-        { where: {
-        available: true
-      },
-        include: [
-          Category,
-          Vendor
-        ]
-      })
+      const products = await Product.findAll({
+        where: {
+          available: true,
+        },
+        include: [Category, Vendor],
+      });
       return products;
     } catch (error) {
       throw new Error('Internal Server Error');
@@ -108,21 +103,23 @@ export class ProductService {
   public static async getProductById(
     product_id: string,
   ): Promise<Product | null> {
- 
-      const product = await Product.findByPk(product_id,{include: [Vendor,Category]});
-      return product;
+    const product = await Product.findByPk(product_id, {
+      include: [Vendor, Category],
+    });
+    return product;
   }
   public static async getProductByVendorId(
-    product_id: string,vendor_id:string
+    product_id: string,
+    vendor_id: string,
   ): Promise<Product | null> {
-
-      const product = await Product.findOne({where:{product_id:product_id,vendor_id:vendor_id},include: [Vendor,Category]});
-      return product;
+    const product = await Product.findOne({
+      where: { product_id: product_id, vendor_id: vendor_id },
+      include: [Vendor, Category],
+    });
+    return product;
   }
 
-  
-
-  static async searchProducts(criteria: SearchParams): Promise<Product[]>  {
+  static async searchProducts(criteria: SearchParams): Promise<Product[]> {
     const where: WhereOptions = {};
 
     if (criteria.name) {
@@ -131,7 +128,7 @@ export class ProductService {
 
     if (criteria.minPrice !== undefined) {
       where.price = { ...where.price, [Op.gte]: criteria.minPrice };
-   }
+    }
 
     if (criteria.maxPrice !== undefined) {
       where.price = { ...where.price, [Op.lte]: criteria.maxPrice };
@@ -151,13 +148,47 @@ export class ProductService {
     }
 
     try {
-        const products = await Product.findAll({ where, });
-        return products;
+      const products = await Product.findAll({ where });
+      return products;
     } catch (error) {
       console.error('Error in ProductService.searchProducts:', error);
       const errorMessage = (error as Error).message;
       throw new Error(`Failed to search products: ${errorMessage}`);
     }
+  }
 }
 
-}
+// deleting service
+
+export const deleteItemService = async (
+  id: string,
+  user: User,
+): Promise<string | null> => {
+  try {
+    const target = await Vendor.findOne({ where: { user_id: user.user_id } });
+
+    if (!target) {
+      throw new Error('vendor not found');
+    }
+    const product = await Product.findOne({
+      where: { product_id: id, vendor_id: target.vendor_id },
+    });
+
+    if (!product) {
+      throw new Error('no access to this collection');
+    }
+
+    await Product.destroy({
+      where: {
+        product_id: id,
+      },
+    });
+    return 'deleted successfully';
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Error updating available status: ${error.message}`);
+    } else {
+      throw new Error('Unknown error occurred');
+    }
+  }
+};
