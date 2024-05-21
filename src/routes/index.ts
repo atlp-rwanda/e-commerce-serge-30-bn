@@ -12,6 +12,7 @@ import cartRoute from './cart.route';
 import searchRoutes from './productSearch.router';
 import adminRoute from './admin.routes';
 import paymentRoute from './payment.route';
+import orderRoute from './order.route';
 
 const router = Router();
 const routers: Router[] = [
@@ -27,6 +28,7 @@ const routers: Router[] = [
   vendorRoutes,
   cartRoute,
   searchRoutes,
+  orderRoute,
   adminRoute
 ]
 

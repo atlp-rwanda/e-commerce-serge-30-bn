@@ -18,7 +18,7 @@ import jwt from 'jsonwebtoken';
 dotenv.config();
 
 let cartId: any;
-const productId = '62414288-5be2-4e5c-b048-323bbeedd369';
+const productId = 'ab864802-4eef-42be-adc1-89f8e9c1781a';
 
 beforeEach(async () => {
   server;
