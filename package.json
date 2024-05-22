@@ -13,7 +13,9 @@
     "server": "nodemon",
     "lint": "eslint ."
   },
-  "pre-commit": ["lint-staged"],
+  "pre-commit": [
+    "lint-staged"
+  ],
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "npm run lint",
@@ -38,6 +40,7 @@
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "eslint-plugin-typescript": "^0.14.0",
     "express": "^4.19.2",
@@ -53,7 +56,7 @@
     "nodemon": "^3.1.0",
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",
-    "sequelize": "^6.37.2",
+    "sequelize": "^6.37.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "winston": "^3.13.0"
@@ -69,7 +72,7 @@
     "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/multer": "^1.4.11",
-    "@types/node": "^20.12.11",
+    "@types/node": "^20.12.12",
     "@types/nodemailer": "^6.4.15",
     "@types/sendgrid": "^4.3.0",
     "@types/supertest": "^6.0.2",
