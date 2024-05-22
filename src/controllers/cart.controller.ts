@@ -89,4 +89,44 @@ export const cartController = {
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
+
+  async viewCart(req: CustomRequest, res: Response) {
+    try {
+      const userId = req.user;
+      if(!userId){
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+  
+      const { user_id } = userId;
+      const cart = await CartService.getCartByUserId(user_id);
+  
+      if (!cart) {
+        return res.status(404).json({message: 'Your cart is empty'});
+      }
+  
+      return res.status(200).json({
+        cart: {
+            id: cart.id,
+            userId: cart.userId,
+            products: await Promise.all(cart.products.map(async (product) => {
+              const productDetails = await ProductService.getProductById(product.productId);
+              if(productDetails){
+                return {
+                  name: productDetails.name,
+                  price: product.price,
+                  quantity: product.quantity,
+                  productId: product.productId,
+                  images: productDetails.image_url
+              };
+              }
+          })),
+            totalPrice: cart.totalPrice
+        }
+      });
+  
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
 };

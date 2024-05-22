@@ -164,6 +164,55 @@ describe('PUT /api/v1/cart/updatecart/:cartId', () => {
   });
 });
 
+describe('GET /api/v1/cart/viewcart', () => {
+
+  it('should return 401 if user is not authenticated', async () => {
+      const response = await request(server)
+          .get('/api/v1/cart/viewcart');
+
+      expect(response.statusCode).toBe(401);
+  });
+
+  it('should return 404 if user\'s cart is empty', async () => {
+    // Mocking the scenario where the user's cart is empty
+    jest.spyOn(CartService, 'getCartByUserId').mockResolvedValue(null);
+    const email = 'yuppiegvng@gmail.com';
+    const user = await AuthService.getUserByEmail(email);
+
+    if(user){
+      const passwordRemoved = { ...user.toJSON(), password: undefined };
+      const token = jwt.sign({ user: passwordRemoved }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
+
+      const response = await request(server)
+        .get('/api/v1/cart/viewcart')
+        .set('Cookie', `Authorization=${token}`)
+
+    expect(response.statusCode).toBe(404);
+    }
+});
+
+  it('should return user\'s cart with status code 200', async () => {
+    const email = 'yuppiegvng@gmail.com';
+    const user = await AuthService.getUserByEmail(email);
+
+    if(user){
+      const passwordRemoved = { ...user.toJSON(), password: undefined };
+      const token = jwt.sign({ user: passwordRemoved }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
+
+      const response = await request(server)
+        .get('/api/v1/cart/viewcart')
+        .set('Cookie', `Authorization=${token}`);
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.cart).toHaveProperty('id');
+        expect(response.body.cart).toHaveProperty('userId');
+        expect(response.body.cart).toHaveProperty('products');
+        expect(response.body.cart).toHaveProperty('totalPrice');
+        expect(response.body.cart.products).toBeInstanceOf(Array);
+    }
+  });
+});
+
 afterAll(async () => {
   server.close();
 });
