@@ -75,4 +75,69 @@ export class CartService {
 
     return cart;
   }
+
+  public static async getCartById(cartId: string): Promise<Cart | null> {
+    try {
+      const cart = await Cart.findByPk(cartId);
+      return cart;
+    } catch (error: any) {
+      throw new Error('Failed to get cart: ' + error.message);
+    }
+  }
+
+  public static async updateProductInCart(
+    cartId: string,
+    userId: string,
+    productId: string,
+    quantityChange: number,
+  ): Promise<Cart | null> {
+    const cart = await Cart.findOne({ where: { id: cartId, userId: userId } });
+    if (!cart) {
+      throw new Error(
+        'You do not have access to this cart or it does not exist',
+      );
+    }
+
+    const product = cart.products.find(
+      (item: CartProduct) => item.productId === productId,
+    );
+    if (!product) {
+      throw new Error(
+        'Product does not exist in your cart. Consider adding it instead.',
+      );
+    }
+
+    product.quantity += quantityChange;
+
+    if (product.quantity <= 0) {
+      cart.products = cart.products.filter(
+        (p: CartProduct) => p.productId !== productId,
+      );
+    }
+
+    const totalPrice = cart.products.reduce(
+      (total: number, item: CartProduct) =>
+        total + item.price * product.quantity,
+      0,
+    );
+    const totalQuantity = cart.products.reduce(
+      (total: number, item: CartProduct) => total + item.quantity,
+      0,
+    );
+
+    await Cart.update(
+      {
+        products: cart.products,
+        totalPrice: totalPrice,
+        totalQuantity: totalQuantity,
+      },
+      {
+        where: { id: cartId },
+      },
+    );
+
+    const updatedCart = await Cart.findOne({ where: { id: cartId } });
+
+    return updatedCart;
+  }
 }
