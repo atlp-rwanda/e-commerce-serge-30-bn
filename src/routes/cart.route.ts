@@ -18,5 +18,10 @@ cartRoute.patch(
   validateSchema(cartSchema.updateItem),
   cartController.updateItemInCart,
 );
+cartRoute.get(
+  '/cart/viewcart',
+  isAuthenticated,
+  cartController.viewCart
+);
 
 export default cartRoute;

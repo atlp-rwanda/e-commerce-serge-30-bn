@@ -122,3 +122,48 @@
  *     tags:
  *       - cart
  */
+/**
+ * @openapi
+ * /api/v1/cart/viewcart:
+ *   get:
+ *     summary: View the user's cart
+ *     description: Viewing the items in the cart
+ *     responses:
+ *       '200':
+ *         description: Cart items retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Cart item retrieved successfully
+ *                   example: Cart items displayed.
+ *       '401':
+ *         description: No Token Provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: No Token Provided.
+ *                   example: No Token Provided
+ *       '404':
+ *         description: Empty cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Empty Cart
+ *                   example: Your cart is empty
+ *       500:
+ *         description: Internal server error
+ *     tags:
+ *       - cart
+ */
