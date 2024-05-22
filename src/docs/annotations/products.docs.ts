@@ -207,8 +207,8 @@
  * @openapi
  * /api/v1/product/{productId}:
  *   patch:
- *     summary: Create a new product
- *     description: Creates a new product if the user has vendor permissions.
+ *     summary: Update an existing product
+ *     description: Updates an existing product if the user has vendor permissions.
  *     tags:
  *       - Products
  *     security:
@@ -246,7 +246,7 @@
  *                 type: integer
  *     responses:
  *       '201':
- *         description: Product created successfully
+ *         description: Product updated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -257,7 +257,7 @@
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: Product created successfully
+ *                   example: Product updated successfully
  *                 data:
  *                   $ref: '#/components/schemas/Product'
  *       '400':

@@ -167,3 +167,110 @@
  *     tags:
  *       - cart
  */
+/**
+ * @openapi
+ * /api/v1/cart/clearcart:
+ *   post:
+ *     summary: Clear the user's cart
+ *     description: Clear the user's cart.
+ *     responses:
+ *       '200':
+ *         description: Cart Cleared successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Cart items cleared successfully.
+ *                   example: Cart items cleared successfully.
+ *       '401':
+ *         description: No Token Provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: No Token Provided.
+ *                   example: No Token Provided
+ *       '404':
+ *         description: Cart Not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: You don't have cart
+ *                   example: Cart not found.
+ *       500:
+ *         description: Internal server error
+ *     tags:
+ *       - cart
+ */
+/**
+ * @openapi
+ * /api/v1/cart/deletecartitem/{productId}:
+ *   delete:
+ *     summary: Delete an item from cart
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product Id
+ *     responses:    
+ *       '200':
+ *         description: Product Removed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Product removed from cart
+ *                   example: Product removed from cart
+ *       '401':
+ *         description: No Token Provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: No Token Provided.
+ *                   example: No Token Provided
+ *       '404':
+ *         description: The product is not in your cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: The product with that id is not in your cart
+ *                   example: The product with that id is not in your cart
+  *       '400':
+ *         description: Failed to delete the product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Failed to delete the product
+ *                   example: Failed to delete the product
+ *       500:
+ *         description: Internal server error
+ *     tags:
+ *       - cart
+ */

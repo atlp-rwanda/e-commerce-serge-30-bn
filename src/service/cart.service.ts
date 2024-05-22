@@ -140,4 +140,60 @@ export class CartService {
 
     return updatedCart;
   }
+
+  public static async clearCart(cartId: string){
+    try {
+      await Cart.destroy({
+        where: {
+          id: cartId
+        },
+      });
+
+      const cart = await Cart.findOne({ where: { id: cartId } });
+
+      if(!cart){
+        return true;
+      }
+    } catch (error: any) {
+      return new error('Failed to save data to cart' + error.message);
+    }
+  }
+  
+  public static async deleteCartItem(
+    user_id: string,
+    productId: string,
+   ): Promise<Cart | null> {
+   try {
+    const cart = await Cart.findOne({ where: { userId: user_id } });
+    if (cart) {
+      const updatedCartProducts = cart.products.filter(product => product.productId !== productId);
+
+      // Calculate new total price and total quantity
+      let totalPrice = 0;
+      let totalQuantity = 0;
+      updatedCartProducts.forEach(product => {
+        totalPrice += product.price * product.quantity;
+        totalQuantity += product.quantity;
+      });
+
+      await Cart.update(
+        {
+          products: updatedCartProducts,
+          totalPrice: totalPrice,
+          totalQuantity: totalQuantity,
+        },
+        {
+          where: { userId: user_id },
+        }
+      );
+      const updatedCart = await Cart.findOne({ where: { userId: user_id } });
+      return updatedCart;
+    }
+    return null;
+
+   } catch (error: any) {
+    return new error('Failed to save data to cart' + error.message); 
+   }
+  }
+
 }

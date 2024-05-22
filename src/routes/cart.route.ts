@@ -23,5 +23,15 @@ cartRoute.get(
   isAuthenticated,
   cartController.viewCart
 );
+cartRoute.post(
+  '/cart/clearcart',
+  isAuthenticated,
+  cartController.clearCart
+);
+cartRoute.delete(
+  '/cart/deletecartitem/:productId',
+  isAuthenticated,
+  cartController.deleteCartItem
+);
 
 export default cartRoute;

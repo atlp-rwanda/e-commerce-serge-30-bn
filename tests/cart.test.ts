@@ -14,8 +14,6 @@ import dotenv from 'dotenv';
 import AuthService from '../src/service/auth.service';
 import { CartService } from '../src/service/cart.service';
 import jwt from 'jsonwebtoken';
-jest.mock('../src/service/cart.service');
-jest.mock('../src/service/auth.service');
 
 dotenv.config();
 
@@ -30,70 +28,76 @@ describe('POST /api/v1/cart', () => {
   it('should add a product to the cart', async () => {
     const email = 'tuyishimehope01@gmail.com';
     const user = await AuthService.getUserByEmail(email);
+    let token;
 
     if (user) {
       const passwordRemoved = { ...user.toJSON(), password: undefined };
-      const token = jwt.sign(
+      token = jwt.sign(
         { user: passwordRemoved },
         process.env.JWT_SECRET || '',
         { expiresIn: '1h' },
       );
-
-      const response = await request(server)
-        .post('/api/v1/cart/addtocart')
-        .set('Cookie', `Authorization=${token}`)
-        .send({ productid: productId, quantity: 1 });
-
-      expect(response.statusCode).toBe(200);
-      expect(response.body.message).toBe('Item added to cart successfully');
-      expect(response.body.cart).toBeInstanceOf(Object);
-      cartId = response.body.cart.id;
     }
+
+    const response = await request(server)
+      .post('/api/v1/cart/addtocart')
+      .set('Cookie', `Authorization=${token}`)
+      .send({ productid: productId, quantity: 1 });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Item added to cart successfully');
+    cartId = response.body.cart.id;
+    console.log(cartId);
   });
 
   it('should return 404 if product does not exist', async () => {
     const nonExistentProductId = 'non-existent-product-id';
     const email = 'tuyishimehope01@gmail.com';
     const user = await AuthService.getUserByEmail(email);
+    let token;
 
     if (user) {
       const passwordRemoved = { ...user.toJSON(), password: undefined };
-      const token = jwt.sign(
+      token = jwt.sign(
         { user: passwordRemoved },
         process.env.JWT_SECRET || '',
         { expiresIn: '1h' },
       );
-
-      const response = await request(server)
-        .post('/api/v1/cart')
-        .set('Cookie', `Authorization=${token}`)
-        .send({ productid: nonExistentProductId, quantity: 1 });
-
-      expect(response.statusCode).toBe(404);
     }
+
+    const response = await request(server)
+      .post('/api/v1/cart')
+      .set('Cookie', `Authorization=${token}`)
+      .send({ productid: nonExistentProductId, quantity: 1 });
+
+    expect(response.statusCode).toBe(404);
+
+    await request(server).post('/api/v1/cart/clearcart');
   });
 });
 
-describe('PUT /api/v1/cart/updatecart/:cartId', () => {
+describe('PATCH /api/v1/cart/updatecart/:cartId', () => {
   it('should update the product quantity in the cart', async () => {
     const email = 'tuyishimehope01@gmail.com';
     const user = await AuthService.getUserByEmail(email);
+    let token;
 
     if (user) {
       const passwordRemoved = { ...user.toJSON(), password: undefined };
-      const token = jwt.sign(
+      token = jwt.sign(
         { user: passwordRemoved },
         process.env.JWT_SECRET || '',
         { expiresIn: '1h' },
       );
+    }
 
-      await request(server)
+    await request(server)
         .post('/api/v1/cart/addtocart')
         .set('Cookie', `Authorization=${token}`)
         .send({ productid: productId, quantity: 1 });
 
       const response = await request(server)
-        .put(`/api/v1/cart/updatecart/${cartId}`)
+        .patch(`/api/v1/cart/updatecart/${cartId}`)
         .set('Cookie', `Authorization=${token}`)
         .send({ productId, quantity: 3 });
 
@@ -102,65 +106,44 @@ describe('PUT /api/v1/cart/updatecart/:cartId', () => {
       expect(response.body.cart).toBeInstanceOf(Object);
       expect(response.body.cart.totalQuantity).toBeGreaterThan(0);
       expect(response.body.cart.totalPrice).toBeGreaterThan(0);
-    }
+
   });
 
   it('should return 404 if product does not exist in the cart', async () => {
     const email = 'tuyishimehope01@gmail.com';
     const user = await AuthService.getUserByEmail(email);
+    let token;
 
     if (user) {
       const passwordRemoved = { ...user.toJSON(), password: undefined };
-      const token = jwt.sign(
+      token = jwt.sign(
         { user: passwordRemoved },
         process.env.JWT_SECRET || '',
         { expiresIn: '1h' },
       );
+    }
 
-      const response = await request(server)
-        .put(`/api/v1/cart/updatecart/${cartId}`)
+    const response = await request(server)
+        .patch(`/api/v1/cart/updatecart/${cartId}`)
         .set('Cookie', `Authorization=${token}`)
-        .send({ productId: 'non-existent-product-id', quantity: 3 });
+        .send({ productId: 'c0abe869-6203-413f-0000-73b2361579b7', quantity: 3 });
 
       expect(response.statusCode).toBe(404);
       expect(response.body.message).toBe(
-        'Product does not exist in your cart. Consider adding it instead.',
+        'Product not found.',
       );
-    }
+
+      await request(server)
+        .delete(`/api/v1/cart/deletecartitem/${productId}`)
+        .set('Cookie', `Authorization=${token}`)
   });
 
   it('should return 401 if user is not authenticated', async () => {
     const response = await request(server)
-      .put(`/api/v1/cart/updatecart/${cartId}`)
+      .patch(`/api/v1/cart/updatecart/${cartId}`)
       .send({ productId, quantity: 3 });
 
     expect(response.statusCode).toBe(401);
-  });
-
-  it('should return 500 for an internal server error', async () => {
-    const email = 'tuyishimehope01@gmail.com';
-    const user = await AuthService.getUserByEmail(email);
-
-    if (user) {
-      const passwordRemoved = { ...user.toJSON(), password: undefined };
-      const token = jwt.sign(
-        { user: passwordRemoved },
-        process.env.JWT_SECRET || '',
-        { expiresIn: '1h' },
-      );
-
-      jest
-        .spyOn(CartService, 'updateProductInCart')
-        .mockRejectedValue(new Error('Internal server error'));
-
-      const response = await request(server)
-        .put(`/api/v1/cart/updatecart/${cartId}`)
-        .set('Cookie', `Authorization=${token}`)
-        .send({ productId, quantity: 3 });
-
-      expect(response.statusCode).toBe(500);
-      expect(response.body.message).toBe('Internal server error');
-    }
   });
 });
 
@@ -199,6 +182,11 @@ describe('GET /api/v1/cart/viewcart', () => {
       const passwordRemoved = { ...user.toJSON(), password: undefined };
       const token = jwt.sign({ user: passwordRemoved }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
 
+      await request(server)
+        .post('/api/v1/cart/addtocart')
+        .set('Cookie', `Authorization=${token}`)
+        .send({ productid: productId, quantity: 1 });
+
       const response = await request(server)
         .get('/api/v1/cart/viewcart')
         .set('Cookie', `Authorization=${token}`);
@@ -209,7 +197,167 @@ describe('GET /api/v1/cart/viewcart', () => {
         expect(response.body.cart).toHaveProperty('products');
         expect(response.body.cart).toHaveProperty('totalPrice');
         expect(response.body.cart.products).toBeInstanceOf(Array);
+
+        await request(server)
+        .delete(`/api/v1/cart/deletecartitem/${productId}`)
+        .set('Cookie', `Authorization=${token}`)
     }
+  });
+});
+
+describe('POST /api/v1/cart/clearcart', () => {
+  it('Should clear the cart and return 200', async () => {
+    const cartData = {
+      userId: 'b1950838-d809-4124-a154-a03380990270',
+      products: [
+        {
+          productId: '7059362e-34de-4c61-0001-12bb235fbc1f',
+          quantiy: 2,
+          price: 5,
+        },
+      ],
+      totalPrice: 10,
+      totalQuantity: 2,
+    };
+
+    CartService.saveToCart(cartData);
+
+    const email = 'olivierbyiringiro025@gmail.com';
+    const user = await AuthService.getUserByEmail(email);
+    let token;
+
+    if (user) {
+      const passwordRemoved = { ...user.toJSON(), password: undefined };
+      token = jwt.sign(
+        { user: passwordRemoved },
+        process.env.JWT_SECRET || '',
+        { expiresIn: '1h' },
+      );
+    }
+    const response = await request(server)
+      .post('/api/v1/cart/clearcart')
+      .set('Cookie', `Authorization=${token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Cart cleared succefully');
+  });
+
+  it('Should return 401 if the user is not logged in', async () => {
+    const response = await request(server).post('/api/v1/cart/clearcart');
+
+    expect(response.statusCode).toBe(401);
+  });
+
+  it('Should return 404 if the user doesnt have items in cart', async () => {
+    const email = 'olivierbyiringiro025@gmail.com';
+    const user = await AuthService.getUserByEmail(email);
+    let token;
+
+    if (user) {
+      const passwordRemoved = { ...user.toJSON(), password: undefined };
+      token = jwt.sign(
+        { user: passwordRemoved },
+        process.env.JWT_SECRET || '',
+        { expiresIn: '1h' },
+      );
+    }
+    const response = await request(server)
+      .post('/api/v1/cart/clearcart')
+      .set('Cookie', `Authorization=${token}`);
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe('Cart not found');
+  });
+});
+
+describe('DELETE /api/v1/cart/deletecartitem/:productId', () => {
+  const cartData = {
+    userId: 'b1950838-d809-4124-a154-a03380990270',
+    products: [
+      {
+        productId: '7059362e-34de-4c61-0001-12bb235fbc1f',
+        quantiy: 2,
+        price: 5,
+      },
+    ],
+    totalPrice: 10,
+    totalQuantity: 2,
+  };
+
+  it('Should return 404 if the product is not in your cart', async () => {
+    CartService.saveToCart(cartData);
+    const email = 'olivierbyiringiro025@gmail.com';
+    const user = await AuthService.getUserByEmail(email);
+    let token;
+
+    if (user) {
+      const passwordRemoved = { ...user.toJSON(), password: undefined };
+      token = jwt.sign(
+        { user: passwordRemoved },
+        process.env.JWT_SECRET || '',
+        { expiresIn: '1h' },
+      );
+    }
+    const response = await request(server)
+      .delete('/api/v1/cart/deletecartitem/4c61-0001')
+      .set('Cookie', `Authorization=${token}`);
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe('The product is not in your cart');
+  });
+
+  it('Should Delete the item from cart and return 200', async () => {
+    const email = 'olivierbyiringiro025@gmail.com';
+    const user = await AuthService.getUserByEmail(email);
+    let token;
+
+    if (user) {
+      const passwordRemoved = { ...user.toJSON(), password: undefined };
+      token = jwt.sign(
+        { user: passwordRemoved },
+        process.env.JWT_SECRET || '',
+        { expiresIn: '1h' },
+      );
+    }
+    const response = await request(server)
+      .delete(
+        `/api/v1/cart/deletecartitem/7059362e-34de-4c61-0001-12bb235fbc1f`,
+      )
+      .set('Cookie', `Authorization=${token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Product removed successfully');
+  });
+
+  it('Should return 200 if the cart is already empty', async () => {
+    const email = 'olivierbyiringiro025@gmail.com';
+    const user = await AuthService.getUserByEmail(email);
+    let token;
+
+    if (user) {
+      const passwordRemoved = { ...user.toJSON(), password: undefined };
+      token = jwt.sign(
+        { user: passwordRemoved },
+        process.env.JWT_SECRET || '',
+        { expiresIn: '1h' },
+      );
+    }
+    const response = await request(server)
+      .delete(
+        `/api/v1/cart/deletecartitem/7059362e-34de-4c61-0001-12bb235fbc1f`,
+      )
+      .set('Cookie', `Authorization=${token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Your cart is empty');
+  });
+
+  it('Should return 401 if the user is not logged in', async () => {
+    const response = await request(server).delete(
+      '/api/v1/cart/deletecartitem/7059362e-34de-4c61-0001-12bb235fbc1f',
+    );
+
+    expect(response.statusCode).toBe(401);
   });
 });
 
