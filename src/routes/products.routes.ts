@@ -1,5 +1,8 @@
 import express from 'express';
-import { productsController } from '../controllers/products.controller';
+import {
+  deleteItem,
+  productsController,
+} from '../controllers/products.controller';
 import { isAuthenticated } from '../middleware/authentication/auth.middleware';
 import { isAuthorized } from '../middleware/user.authenticate';
 import { UserRole } from '../models/user.model';
@@ -7,7 +10,6 @@ import {
   validateSchema,
   productSchema,
 } from '../validations/product.validation';
-
 
 const productRoutes = express.Router();
 
@@ -25,10 +27,22 @@ productRoutes.patch(
   isAuthorized(UserRole.VENDOR),
   productsController.updateProduct,
 );
+productRoutes.delete(
+  '/product/:id',
+  isAuthenticated,
+  isAuthorized(UserRole.VENDOR),
+  deleteItem,
+);
 
-productRoutes.get('/product/:product_id',
-isAuthenticated,
-productsController.getProductById)
-productRoutes.get('/products/all',isAuthenticated,productsController.getAllProducts);
+productRoutes.get(
+  '/product/:product_id',
+  isAuthenticated,
+  productsController.getProductById,
+);
+productRoutes.get(
+  '/products/all',
+  isAuthenticated,
+  productsController.getAllProducts,
+);
 
 export default productRoutes;

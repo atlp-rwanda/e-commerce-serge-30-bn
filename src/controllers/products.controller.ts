@@ -1,5 +1,5 @@
-import { Response} from 'express';
-import { ProductService } from '../service/product.service';
+import { Response } from 'express';
+import { ProductService, deleteItemService } from '../service/product.service';
 import { CustomRequest } from '../middleware/authentication/auth.middleware';
 import { VendorService } from '../service/vendor.service';
 import { CategoryService } from '../service/products.category.service';
@@ -105,39 +105,44 @@ export const productsController = {
         return res.status(500).json({ message: error.message });
       }
       return res.status(500).json({ message: 'Internal server error' });
-    }},
-   // Getting a single product by ID
-   async getProductById(req: CustomRequest, res: Response) {
+    }
+  },
+  // Getting a single product by ID
+  async getProductById(req: CustomRequest, res: Response) {
     try {
       if (!req.user) {
         return res
           .status(401)
           .json({ success: false, message: 'Unauthorized' });
       }
-      const {product_id} = req.params;
+      const { product_id } = req.params;
       let product = await ProductService.getProductById(product_id);
       const role = req.user.role;
-      
-      if(role === "VENDOR"){
-        const vendor = await VendorService.getVendorByAuthenticatedUserId(req.user.user_id);
+
+      if (role === 'VENDOR') {
+        const vendor = await VendorService.getVendorByAuthenticatedUserId(
+          req.user.user_id,
+        );
         if (!vendor) {
           return res.status(404).json({ message: 'Vendor not found' });
         }
-       product = await ProductService.getProductByVendorId(product_id,vendor.vendor_id)
+        product = await ProductService.getProductByVendorId(
+          product_id,
+          vendor.vendor_id,
+        );
       }
-      if(!product ){
+      if (!product) {
         return res.status(404).json({
           success: false,
-          message: `${role === 'VENDOR'? 'Product not found in your collection' : 'Product not found' }`,
-        }); 
+          message: `${role === 'VENDOR' ? 'Product not found in your collection' : 'Product not found'}`,
+        });
       }
-       return res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'Product retrieved successfully',
         data: product,
       });
-      }
-     catch (error: unknown) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
         return res.status(500).json({ error: error.message });
       }
@@ -153,19 +158,21 @@ export const productsController = {
       let products = await ProductService.UsergetAllProducts();
       const role = req.user.role;
 
-      if(req.user.role === "VENDOR"){
-      const vendor = await VendorService.getVendorByAuthenticatedUserId(req.user.user_id);
-      if (!vendor) {
-        return res.status(404).json({ message: 'Vendor not found' });
+      if (req.user.role === 'VENDOR') {
+        const vendor = await VendorService.getVendorByAuthenticatedUserId(
+          req.user.user_id,
+        );
+        if (!vendor) {
+          return res.status(404).json({ message: 'Vendor not found' });
+        }
+        products = await ProductService.getProductsByVendorId(vendor.vendor_id);
       }
-       products = await ProductService.getProductsByVendorId(vendor.vendor_id);
-    }
-    if(!products){
-      return res.status(404).json({
-        success: false,
-        message: `${role === 'VENDOR'? 'Products not found in your collection' : 'Products not found' }`,
-      });
-    }
+      if (!products) {
+        return res.status(404).json({
+          success: false,
+          message: `${role === 'VENDOR' ? 'Products not found in your collection' : 'Products not found'}`,
+        });
+      }
       return res.status(200).json({
         success: true,
         message: 'Products retrieved successfully',
@@ -176,4 +183,23 @@ export const productsController = {
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
+};
+
+// delete product from a collection
+
+export const deleteItem = async (req: CustomRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+    const { id } = req.params;
+
+    const message = await deleteItemService(id, req.user);
+
+    return res.status(200).json({ message: message });
+  } catch (error) {
+    return res.status(400).json({
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
 };
