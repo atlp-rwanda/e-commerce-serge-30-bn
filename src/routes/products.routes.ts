@@ -6,10 +6,8 @@ import {
 import { isAuthenticated } from '../middleware/authentication/auth.middleware';
 import { isAuthorized } from '../middleware/user.authenticate';
 import { UserRole } from '../models/user.model';
-import {
-  validateSchema,
-  productSchema,
-} from '../validations/product.validation';
+import { productSchema} from '../validations/product.validation';
+import { validateSchema } from '../utils/joi.validateSchema';
 
 const productRoutes = express.Router();
 
@@ -43,6 +41,14 @@ productRoutes.get(
   '/products/all',
   isAuthenticated,
   productsController.getAllProducts,
+);
+
+productRoutes.put(
+  '/product/available/:id',
+  validateSchema(productSchema.statusChange),
+  isAuthorized(UserRole.VENDOR),
+  isAuthenticated,
+  productsController.changeStatus,
 );
 
 export default productRoutes;

@@ -156,6 +156,37 @@ export class ProductService {
       throw new Error(`Failed to search products: ${errorMessage}`);
     }
   }
+
+  public static async modifyStatus(
+    id: string,
+    available: boolean,
+    user: User,
+  ): Promise<string | null> {
+    try {
+      const target = await Vendor.findOne({ where: { user_id: user.user_id } });
+
+      if (!target) {
+        throw new Error('vendor not found');
+      }
+      const product = await Product.findOne({
+        where: { product_id: id, vendor_id: target.vendor_id },
+      });
+
+      if (!product) {
+        throw new Error('You are not authorized to this collection');
+      }
+
+      await Product.update({ available }, { where: { product_id: id } });
+      const message = available ? 'available' : 'not available';
+      return message;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Error updating available status: ${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred');
+      }
+    }
+  }
 }
 
 // deleting service

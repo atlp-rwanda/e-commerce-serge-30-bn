@@ -130,6 +130,59 @@ describe('DELETE /api/v1/product/:productId', () => {
   });
 });
 
-afterAll(() => {
+describe('PUT /api/v1/product/available/:id', () => {
+  it('should update product status successfully', async () => {
+    const response = await request(server)
+      .put(`/api/v1/product/available/${product_Id}`)
+      .set('Cookie', `Authorization=${token}`)
+      .send({ status: true });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      message: 'Status updated successfully',
+      status: 'available',
+    });
+  });
+
+  it('should not update ....validation issues', async () => {
+    const response = await request(server)
+      .put(`/api/v1/product/available/${product_Id}`)
+      .set('Cookie', `Authorization=${token}`)
+      .send({ status: 'not valid' });
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: '"status" must be a boolean' });
+  });
+
+  it('should return 400 for others collection ', async () => {
+    const response = await request(server)
+      .put(`/api/v1/product/available/3cf47812-9b6d-4911-adc4-19870a615c16`)
+      .set('Cookie', `Authorization=${token}`);
+    expect(response.status).toBe(400);
+  });
+
+  it('should return a 401 error for unauthorized access', async () => {
+    const response = await request(server)
+      .put(`/api/v1/product/available/${product_Id}`)
+      .send({ status: true });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ message: 'jwt must be provided' });
+  });
+
+  it('should return error on invalid params', async () => {
+    const response = await request(server)
+      .put(`/api/v1/product/available/invalid-uuid`)
+      .set('Cookie', `Authorization=${token}`)
+      .send({ status: true });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message:
+        'Error updating available status: invalid input syntax for type uuid: "invalid-uuid"',
+    });
+  });
+});
+
+
+afterAll(async () => {
   server.close();
 });

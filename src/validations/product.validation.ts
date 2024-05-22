@@ -1,14 +1,5 @@
 import Joi from 'joi';
-import { Request, Response, NextFunction } from 'express';
-export const validateSchema = (schema: Joi.ObjectSchema) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const { error } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.message });
-    }
-    next();
-  };
-};
+
 export const productSchema = {
   product: Joi.object({
     name: Joi.string().min(1).max(255).required().messages({
@@ -104,4 +95,12 @@ export const productSchema = {
   })
     .min(1)
     .error(new Error('At least one attribute required to update product')),
+
+    statusChange: Joi.object({
+      status: Joi.boolean().required().messages({
+        'boolean.base': ' the status must be a boolean value',
+      }),
+    }).required().messages({
+      'any.required': 'the status is required.',
+    }),
 };
