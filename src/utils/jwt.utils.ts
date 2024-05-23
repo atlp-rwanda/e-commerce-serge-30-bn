@@ -15,4 +15,7 @@ const verifyToken = (token: string) => {
     throw new Error('Invalid token')
   }
 }
-export { generateToken, verifyToken }
+const decodToken = (token: string) => {
+  return jwt.decode(token);
+};
+export { generateToken, verifyToken, decodToken }

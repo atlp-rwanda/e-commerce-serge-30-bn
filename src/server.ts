@@ -12,6 +12,8 @@ import session from 'express-session';
 import router from './routes/index';
 require('./associations/associations');
 require('./utils/product.expiration.cron.job');
+import { socketSetUp } from './utils/chat';
+require('./associations/associations')
 
 dotenv.config();
 
@@ -50,6 +52,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const isTesting = process.env.NODE_ENV === 'testing';
 const sequelize = isProduction ? production : isTesting ? testing : development;
 
+
 sequelize
   .authenticate()
   .then(() => {
@@ -66,3 +69,4 @@ sequelize
   .catch((error) => {
     logger.error('Unable to connect to the database:', error);
   });
+socketSetUp(server);
