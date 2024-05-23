@@ -149,7 +149,7 @@ describe('PUT /api/v1/product/available/:id', () => {
       .set('Cookie', `Authorization=${token}`)
       .send({ status: 'not valid' });
     expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: '"status" must be a boolean' });
+    expect(response.body).toEqual({ message: ' the status must be a boolean value' });
   });
 
   it('should return 400 for others collection ', async () => {
