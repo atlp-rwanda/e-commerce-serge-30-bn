@@ -219,3 +219,5 @@ export class UserService {
     return usersData;
   }
 }
+
+export {UserData,EmailOptions};

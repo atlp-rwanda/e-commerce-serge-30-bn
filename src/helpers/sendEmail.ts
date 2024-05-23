@@ -94,4 +94,4 @@ const sendEmail = async <T>({
     }
 };
 
-export { sendEmail };
+export { sendEmail,EmailOptions };

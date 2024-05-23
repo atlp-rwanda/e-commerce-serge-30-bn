@@ -4,6 +4,7 @@ import { sequelize } from '../models/order.model';
 import Product from '../models/products.Model';
 import { ProductService } from '../service/index';
 import { Request, Response } from 'express';
+import NotificationEvents from '../service/event.service';
 import User from '../models/user.model';
 import { WebSocketService } from '../utils/orderStatusWebsocket';
 interface ProductProp {
@@ -77,6 +78,7 @@ const createOrder = async (req: CustomRequest, res: Response) => {
     };
 
     const data = await OrderService.saveOrder(orderData);
+    NotificationEvents.emit("newOrder",data,userId.user_id);
 
     await updateProductInventory(products);
     return res.status(201).json({
@@ -92,7 +94,6 @@ const createOrder = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export default createOrder;
 interface AuthenticatedRequest extends Request {
   user?: User;
   webSocketService?: WebSocketService;
@@ -168,3 +169,6 @@ export const updateOrderStatus = async (req: Request, res: Response, webSocketSe
     res.status(500).json({ message: errorMessage });
   }
 };
+
+
+export default createOrder;

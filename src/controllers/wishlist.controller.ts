@@ -1,5 +1,6 @@
 import WishlistService from '../service/wishlist.service';
 import { Response } from 'express';
+import NotificationEvents from '../service/event.service';
 
 async function addToWishlist(req: CustomRequest, res: Response) {
   try {
@@ -12,6 +13,7 @@ async function addToWishlist(req: CustomRequest, res: Response) {
       productId,
       userId.user_id,
     );
+    NotificationEvents.emit("productWished",productId, userId.username)
     res
       .status(201)
       .json({ message: 'Product added to wishlist', product: addedWishlist });

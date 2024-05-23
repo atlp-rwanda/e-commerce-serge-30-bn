@@ -3,6 +3,7 @@ import { ProductService, deleteItemService } from '../service/product.service';
 import { CustomRequest } from '../middleware/authentication/auth.middleware';
 import { VendorService } from '../service/vendor.service';
 import { CategoryService } from '../service/products.category.service';
+import NotificationEvents from '../service/event.service';
 
 export const productsController = {
   async createProduct(req: CustomRequest, res: Response) {
@@ -61,6 +62,7 @@ export const productsController = {
         quantity,
         discount,
       );
+      NotificationEvents.emit("productCreated",product.product_id, req.user.firstname)
       return res.status(201).json({
         success: true,
         message: 'Product created successfully',
@@ -195,6 +197,10 @@ export const productsController = {
       const { id } = req.params;
       const { status } = req.body;
       const message = await ProductService.modifyStatus(id, status, req.user);
+      const product = await ProductService.getProductById(id);
+      message === "available" ? "productAvailable" : "productUnavailbe";
+      NotificationEvents.emit("productAvailable",product);
+     
       return res
         .status(200)
         .json({ message: 'Status updated successfully', status: message });

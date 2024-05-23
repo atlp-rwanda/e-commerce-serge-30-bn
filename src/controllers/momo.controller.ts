@@ -1,6 +1,7 @@
 import { Response } from 'express';
 
 import { initiateMoMoPaymentService } from '../service/momo.service';
+import NotificationEvents from '../service/event.service';
 
 export const initiateMoMoPayment = async (
   req: CustomRequest,
@@ -15,7 +16,7 @@ export const initiateMoMoPayment = async (
     }
 
     const payment = await initiateMoMoPaymentService(user, paymentRequest);
-
+    NotificationEvents.emit("makemomoPayment",paymentRequest,user.user_id);
     return res
       .status(200)
       .json({ message: 'Order paid successfully', payment });

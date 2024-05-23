@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { CartService } from '../service/cart.service';
 import { ProductService } from '../service/product.service';
+import NotificationEvents from '../service/event.service';
 
 export const cartController = {
   async addItemToCart(req: CustomRequest, res: Response) {
@@ -41,7 +42,7 @@ export const cartController = {
           price: productDetails.price,
         });
       }
-
+      NotificationEvents.emit("createCart",productid, userId.user_id)
       res
         .status(200)
         .json({ message: 'Item added to cart successfully', cart });
@@ -143,6 +144,7 @@ export const cartController = {
     
         const clearCartItems = await CartService.clearCart(cart.id);
         if(clearCartItems){
+          NotificationEvents.emit("clearCart",req.user.user_id)
           return res.status(200).json({ message: 'Cart cleared succefully' });
         }
       }

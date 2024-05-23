@@ -1,3 +1,4 @@
+
 export const notificationEmailTemplate = (subject: string, message: string) => {
     return `
       <h1>${subject}</h1>
