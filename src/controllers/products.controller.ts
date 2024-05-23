@@ -1,3 +1,4 @@
+
 import { Response } from 'express';
 import { ProductService, deleteItemService } from '../service/product.service';
 import { CustomRequest } from '../middleware/authentication/auth.middleware';
@@ -148,6 +149,7 @@ export const productsController = {
       }
     }
   },
+
   async getAllProducts(req: CustomRequest, res: Response) {
     try {
       if (!req.user) {
@@ -183,6 +185,27 @@ export const productsController = {
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
+
+  async changeStatus(req: CustomRequest, res: Response) {
+    try {
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ success: false, message: 'Unauthorized' });
+      }
+      const { id } = req.params;
+      const { status } = req.body;
+      const message = await ProductService.modifyStatus(id, status, req.user);
+      return res
+        .status(200)
+        .json({ message: 'Status updated successfully', status: message });
+    } catch (error) {
+      return res.status(400).json({
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  },
+
 };
 
 // delete product from a collection

@@ -401,3 +401,36 @@
  *                   type: string
  *                   example: Product not found.
  */
+
+/**
+ * @openapi
+ * /api/v1/product/available/{id}:
+ *   put:
+ *     summary: Change status by ID of the product
+ *     tags:
+ *       - Products
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the product to set status
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: boolean
+ *                 description: New status for the product
+ *     responses:
+ *       200:
+ *         description: Product status successfully changed!
+ *       400:
+ *         description: Error occurred while updating status
+ */
