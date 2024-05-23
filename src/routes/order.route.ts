@@ -1,5 +1,5 @@
 import express from 'express';
-import { getOrderStatus} from '../controllers/order.controller';
+import { getAllOrders, getOrderStatus} from '../controllers/order.controller';
 import { isAuthenticated } from '../middleware/authentication/auth.middleware';
 import { validateSchema } from '../middleware/validators';
 import { orderSchema } from '../validations/order.validation';
@@ -20,6 +20,7 @@ router.post(
 );
 
 router.get('/orders/:orderId/status', isAuthenticated, getOrderStatus);
+router.get('/orders/all', isAuthenticated, getAllOrders);
 
 router.post(
   '/orders/:orderId/status',

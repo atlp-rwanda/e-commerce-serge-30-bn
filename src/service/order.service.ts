@@ -89,6 +89,22 @@ export class OrderService {
     }
   }
 
+  public static async getAllOrders(userId:string) :  Promise<Order[] | null>{
+    const orders = await Order.findAll({where: {userId}});
+    if (!orders) {
+      throw new Error('Orders not found');
+    }
+    return orders;
+  }
+  public static async adminGetAllOrders() :  Promise<Order[] | null>{
+    const orders = await Order.findAll();
+    if (!orders) {
+      throw new Error('payments not found');
+    }
+    return orders;
+  }
+
+
   public async updateOrderStatus(orderId: string, status: string, expectedDeliveryDate: Date) {
     const order = await Order.findByPk(orderId);
     if (!order) {
@@ -122,6 +138,3 @@ export class OrderService {
 
 
 }
-
-
-

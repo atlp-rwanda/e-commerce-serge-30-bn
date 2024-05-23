@@ -1,3 +1,4 @@
+
 /**
  * @openapi
  * /api/v1/payment:
@@ -174,4 +175,69 @@
  *       type: http
  *       scheme: bearer
  *       bearerFormat: JWT
+ */
+/**
+ * @openapi
+ * /api/v1/payment/all:
+ *   get:
+ *     summary: Get all payments for the authenticated user or vendor
+ *     description: Retrieves all payments associated with the authenticated user's account or, if the user is a vendor, retrieves payments associated with the vendor's account.
+ *     tags:
+ *       - payment
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Payments retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: payments retrieved successfully
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Payment'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       404:
+ *         description: No payments found or vendor not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: you have no payments
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */

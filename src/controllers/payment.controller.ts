@@ -12,6 +12,7 @@ import Stripe from 'stripe';
 import { OrderService } from '../service/order.service';
 import { ProductService } from '../service/index';
 import NotificationEvents from '../service/event.service';
+import { VendorService } from '../service/vendor.service';
 
 dotenv.config();
 
@@ -175,5 +176,45 @@ async function paymentCancel(req: Request, res: Response) {
     }
   }
 }
+
+export const getAllPayments = async (req: CustomRequest, res:Response) => {
+  try{
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ success: false, message: 'Unauthorized' });
+    }
+    let payments = await PaymentService.getAllPayments(req.user.user_id);
+    const role = req.user.role;
+
+    if(role === "ADMIN"){
+      payments = await PaymentService.adminGetAllPayments();
+    }
+    if (role === 'VENDOR') {
+      const vendor = await VendorService.getVendorByAuthenticatedUserId(
+        req.user.user_id,
+      );
+      if (!vendor) {
+        return res.status(404).json({ message: 'Vendor not found' });
+      }
+      payments = await PaymentService.getAllPayments(vendor.user_id);
+  }
+  if (!payments || payments.length < 1) {
+    return res.status(404).json({
+      success: false,
+      message: 'you have no payments',
+    });
+  }
+  return res.status(200).json({
+    success: true,
+    message: 'payments retrieved successfully',
+    data: payments,
+  });
+  }catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+  }
+  
 
 export { makepaymentsession, paymentSuccess, paymentCancel };
