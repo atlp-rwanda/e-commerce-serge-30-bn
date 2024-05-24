@@ -92,6 +92,7 @@ export class ProductService {
       const products = await Product.findAll({
         where: {
           available: true,
+          expired: false,
         },
         include: [Category, Vendor],
       });
@@ -185,6 +186,23 @@ export class ProductService {
       } else {
         throw new Error('Unknown error occurred');
       }
+    }
+  }
+
+  public static async getExpiredProductsByVendorId(
+    vendor_id: string,
+  ): Promise<Product[]> {
+    try {
+      const products = await Product.findAll({
+        where: {
+          vendor_id: vendor_id,
+          expired: true,
+        },
+        include: [Category, Vendor],
+      });
+      return products;
+    } catch (error) {
+      throw new Error('Internal Server Error');
     }
   }
 }
