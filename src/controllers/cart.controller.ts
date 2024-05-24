@@ -127,6 +127,69 @@ export const cartController = {
     } catch (error) {
       res.status(500).json({ message: 'Internal server error' });
     }
+  },
+
+  async clearCart(req: CustomRequest, res:Response) {
+    try {
+
+      let user_id;
+      if(req.user){
+        user_id = req.user.user_id;
+
+        const cart = await CartService.getCartByUserId(user_id);
+        if (!cart) {
+          return res.status(404).json({message: 'Cart not found'});
+        }
+    
+        const clearCartItems = await CartService.clearCart(cart.id);
+        if(clearCartItems){
+          return res.status(200).json({ message: 'Cart cleared succefully' });
+        }
+      }
+  
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  },
+  
+  async deleteCartItem(req: CustomRequest, res: Response) {
+    try {
+
+      let user_id;
+      if(req.user){
+        user_id = req.user.user_id;
+
+        const cart = await CartService.getCartByUserId(user_id);
+        const productId = req.params.productId; 
+
+        if (!cart || cart.products.length == 0) {
+          return res.status(200).json({message: 'Your cart is empty'});
+        }
+        const productExists = cart.products.some(product => product.productId === productId);
+    
+        if (!productExists) {
+          return res.status(404).json({ message: 'The product is not in your cart' });
+        } else{
+          
+          const updatedCart = await CartService.deleteCartItem(user_id, productId);
+          if (updatedCart && updatedCart.products && updatedCart.products.length > 0) {
+            return res.status(200).json({ message: 'Product removed successfully', cart: updatedCart });
+  
+          } else if(updatedCart && updatedCart.products && updatedCart.products.length === 0 ) {
+            const clearCartItems = await CartService.clearCart(cart.id);
+            if(clearCartItems){
+              return res.status(200).json({ message: 'Product removed successfully' });
+            }
+  
+          } else{
+            return res.status(400).json({ message: 'Failed to delete the product' });
+          }
+
+        }
+      }
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal server error' });
+    }
   }
 
 };

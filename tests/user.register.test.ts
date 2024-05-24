@@ -90,8 +90,8 @@ describe('POST /create', () => {
 
   it('should create a new user successfully', async () => {
     const userData = {
-      username: 'testuser',
-      email: 'test@example.com',
+      username: 'testuser21',
+      email: 'test@example21.com',
       password: 'password',
       firstname: 'John',
       lastname: 'Doe',

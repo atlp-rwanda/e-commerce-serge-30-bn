@@ -6,7 +6,7 @@ import {
   EmailSchema,
   EmailTokenSchema,
 } from '../validations/auth.validation';
-import { profileAuth } from '../utils/profile.auth';
+import { isAuthenticated } from '../middleware/authentication/auth.middleware';
 const authRoute = Router();
 
   authRoute.post(
@@ -22,7 +22,7 @@ const authRoute = Router();
   );
 
   authRoute.put(
-    '/auth/:id/update-password', profileAuth,
+    '/auth/:id/update-password', isAuthenticated,
     validateSchema(AuthSchema.updatePassword),
     updatePassword,
   );
