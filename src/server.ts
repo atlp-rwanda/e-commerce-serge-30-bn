@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express from 'express';
 import { createServer } from 'http';
 import cookieParser from 'cookie-parser';
@@ -9,7 +10,7 @@ import { logger } from './config/Logger';
 import { production, development, testing } from './db/config';
 import session from 'express-session';
 import router from './routes/index';
-require('./associations/associations')
+require('./associations/associations');
 
 dotenv.config();
 

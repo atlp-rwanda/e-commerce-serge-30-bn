@@ -11,9 +11,11 @@ import wishListRoute from './whishlist.route';
 import cartRoute from './cart.route';
 import searchRoutes from './productSearch.router';
 import adminRoute from './admin.routes';
+import paymentRoute from './payment.route';
 
 const router = Router();
 const routers: Router[] = [
+  paymentRoute,
   wishListRoute,
   roleRoute,
   userRoute,
@@ -27,5 +29,7 @@ const routers: Router[] = [
   searchRoutes,
   adminRoute
 ]
+
+
 router.use('/api/v1', routers);
 export default router;
