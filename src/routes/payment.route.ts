@@ -7,6 +7,9 @@ import {
 import { isAuthenticated } from '../middleware/authentication/auth.middleware';
 import { isAuthorized } from '../middleware/user.authenticate';
 import { UserRole } from '../models/user.model';
+import { initiateMoMoPayment } from '../controllers/momo.controller';
+import { validateSchema } from '../middleware/validators';
+import { PaymentSchema } from '../validations/payment.validation';
 const paymentRoute = Router();
 
 paymentRoute.post(
@@ -14,6 +17,12 @@ paymentRoute.post(
   isAuthenticated,
   isAuthorized(UserRole.USER),
   makepaymentsession,
+);
+paymentRoute.post(
+  '/payment/momo',
+  isAuthenticated,
+  validateSchema(PaymentSchema.momo),
+  initiateMoMoPayment,
 );
 paymentRoute.get('/payment/success', isAuthenticated, paymentSuccess);
 paymentRoute.get('/payment/cancel', isAuthenticated, paymentCancel);
