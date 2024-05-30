@@ -6,7 +6,7 @@ import {
 import { isAuthenticated } from '../middleware/authentication/auth.middleware';
 import { isAuthorized } from '../middleware/user.authenticate';
 import { UserRole } from '../models/user.model';
-import { productSchema} from '../validations/product.validation';
+import { productSchema } from '../validations/product.validation';
 import { validateSchema } from '../utils/joi.validateSchema';
 
 const productRoutes = express.Router();
@@ -41,6 +41,12 @@ productRoutes.get(
   '/products/all',
   isAuthenticated,
   productsController.getAllProducts,
+);
+productRoutes.get(
+  '/products/all/expired',
+  isAuthorized(UserRole.VENDOR),
+  isAuthenticated,
+  productsController.getAllExpiredProducts,
 );
 
 productRoutes.put(

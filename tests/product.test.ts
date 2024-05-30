@@ -116,6 +116,39 @@ describe('GET /api/v1/product/all', () => {
     expect(res.statusCode).toBe(200);
   });
 });
+describe('GET /api/v1/products/all/expired', () => {
+  it('should require authentication', async () => {
+    const response = await request(app)
+      .get('/api/v1/products/all/expired')
+      .send();
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should get all expired products for authenticated vendor', async () => {
+    const response = await request(app)
+      .get('/api/v1/products/all/expired')
+      .set('Cookie', `Authorization=${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('success', true);
+    expect(response.body).toHaveProperty('data');
+    expect(Array.isArray(response.body.data)).toBe(true);
+  });
+
+  it('should return 404 when no expired products are found', async () => {
+    const response = await request(app)
+      .get('/api/v1/products/all/expired')
+      .set('Cookie', `Authorization=${token}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty('success', false);
+    expect(response.body).toHaveProperty(
+      'message',
+      'No expired products found',
+    );
+  });
+});
 
 describe('DELETE /api/v1/product/:productId', () => {
   it('should require token/loging in', async () => {
@@ -149,7 +182,9 @@ describe('PUT /api/v1/product/available/:id', () => {
       .set('Cookie', `Authorization=${token}`)
       .send({ status: 'not valid' });
     expect(response.status).toBe(400);
-    expect(response.body).toEqual({ message: ' the status must be a boolean value' });
+    expect(response.body).toEqual({
+      message: ' the status must be a boolean value',
+    });
   });
 
   it('should return 400 for others collection ', async () => {
@@ -181,7 +216,6 @@ describe('PUT /api/v1/product/available/:id', () => {
     });
   });
 });
-
 
 afterAll(async () => {
   server.close();

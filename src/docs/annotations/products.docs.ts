@@ -434,3 +434,75 @@
  *       400:
  *         description: Error occurred while updating status
  */
+
+/**
+ * @openapi
+ * /api/v1/products/all/expired:
+ *   get:
+ *     summary: Retrieve all expired products
+ *     description: Retrieve all expired products in the system. If the user is a vendor, it retrieves only the expired products associated with the vendor.
+ *     tags:
+ *       - Products
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Expired products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Expired products retrieved successfully
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       '404':
+ *         description: No expired products found or Vendor not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     noExpiredProducts:
+ *                       summary: No expired products found
+ *                       value: No expired products found
+ *                     vendorNotFound:
+ *                       summary: Vendor not found
+ *                       value: Vendor not found
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */

@@ -19,6 +19,7 @@ class Product extends Model {
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
   public available!: boolean;
+  public expired!: boolean;
 }
 
 Product.init(
@@ -80,7 +81,12 @@ Product.init(
     available: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
-      allowNull: false
+      allowNull: false,
+    },
+    expired: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
     },
   },
   {

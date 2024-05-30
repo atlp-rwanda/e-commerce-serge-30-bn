@@ -11,6 +11,7 @@ import { production, development, testing } from './db/config';
 import session from 'express-session';
 import router from './routes/index';
 require('./associations/associations');
+require('./utils/product.expiration.cron.job');
 
 dotenv.config();
 
