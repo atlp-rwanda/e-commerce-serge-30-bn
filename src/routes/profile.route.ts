@@ -5,8 +5,8 @@ import { isAuthenticated } from '../middleware/authentication/auth.middleware';
 
 const profileRouter = Router();
 
-profileRouter.get('/profile/:id', isAuthenticated, getProfile,);
-profileRouter.put( '/profile/:id',validateSchema(profileSchema), isAuthenticated, updateProfile);
+profileRouter.get('/users/profile', isAuthenticated, getProfile,);
+profileRouter.put( '/users/profile',validateSchema(profileSchema), isAuthenticated, updateProfile);
 
 
  

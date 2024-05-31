@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { development, production, testing } from '../db/config';
+import Review from './review.model';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const isTesting = process.env.NODE_ENV === 'testing';
@@ -20,6 +21,15 @@ class Product extends Model {
   public readonly updatedAt!: Date;
   public available!: boolean;
   public expired!: boolean;
+  public finalRatings!: number;
+  public reviewsCount!: number;
+
+  public static associate(models: { Review: typeof Review }) {
+    Product.hasMany(models.Review, {
+      foreignKey: 'product_id',
+      as: 'productId',
+    });
+  }
 }
 
 Product.init(
@@ -87,6 +97,14 @@ Product.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false,
+    },
+    finalRatings: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0,
+    },
+    reviewsCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
   },
   {

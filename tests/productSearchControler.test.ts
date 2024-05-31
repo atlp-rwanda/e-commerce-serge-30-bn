@@ -12,6 +12,7 @@ describe('ProductController', () => {
   
     afterAll(async () => {
       await sequelize.close(); 
+      server.close()
     });
   
     it('should search products by name', async () => {
