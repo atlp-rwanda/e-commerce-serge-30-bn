@@ -1,5 +1,5 @@
 import express from 'express';
-import { disableUserAccount } from '../controllers';
+import { disableUserAccount, getAllUsersWithExpiredPasswords } from '../controllers';
 import {
   isAdmin,
   isAuthenticated,
@@ -12,4 +12,11 @@ adminRoute.post(
   isAdmin,
   disableUserAccount,
 );
+adminRoute.get(
+  '/admin/expired-password-users',
+  isAuthenticated,
+  isAdmin,
+  getAllUsersWithExpiredPasswords,
+);
+
 export default adminRoute;

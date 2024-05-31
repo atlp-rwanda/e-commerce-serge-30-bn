@@ -27,6 +27,9 @@ class User extends Model {
   role!: UserRole;
   firstname!: string;
   lastname!: string;
+  lastTimePasswordUpdate!: Date;
+  previousPasswords!: string;
+  passwordExpired!: boolean;
 
   public static associate(models: { Profile: typeof Profile }) {
     User.hasOne(models.Profile);
@@ -106,6 +109,21 @@ User.init(
     google_token: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    previousPasswords: {
+      type: DataTypes.JSON,
+      defaultValue: [],
+      allowNull: false
+    },
+    lastTimePasswordUpdate: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      allowNull: false
+    },
+    passwordExpired: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
     },
     createdAt: {
       type: DataTypes.DATE,

@@ -1,5 +1,6 @@
 import User from '../models/user.model';
 import { Request, Response } from 'express';
+import { CustomRequest } from '../middleware/authentication/auth.middleware';
 import { UserService } from '../service/user.service';
 import { logger } from '../config/Logger';
 import {
@@ -35,6 +36,33 @@ export const getAllUsers = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       res.status(500).json({ message: error.message });
     }
+  }
+};
+
+export const getAllUsersWithExpiredPasswords = async (req: CustomRequest, res: Response) => {
+  try {
+    let users;
+
+    if (req.user && req.user.role === 'ADMIN') {
+      users = await User.findAll({ 
+        where: { passwordExpired: true },
+        attributes: { exclude: ['password', 'previousPasswords'] }
+      });
+    }
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        message: 'No users with expired passwords found',
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Users with expired passwords retrieved successfully',
+      data: users,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
