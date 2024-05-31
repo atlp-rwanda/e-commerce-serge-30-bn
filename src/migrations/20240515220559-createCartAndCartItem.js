@@ -34,6 +34,16 @@ module.exports = {
         allowNull: false,
         defaultValue: 0,
       },
+      createdAt: {
+        type: Sequelize.DataTypes.DATE,
+        allowNull: false,
+        defaultValue: new Date(),
+      },
+      updatedAt: {
+        type: Sequelize.DataTypes.DATE,
+        allowNull: true,
+        defaultValue: new Date(),
+      },
     });
   },
 

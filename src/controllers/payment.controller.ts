@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   createStripeSession,
   checkPaymentStatus,
@@ -8,12 +9,15 @@ import { Request, Response } from 'express';
 import PaymentService from '../service/payment.service';
 import { PaymentStatus } from '../models/payment.model';
 import Stripe from 'stripe';
+import { OrderService } from '../service/order.service';
+import { ProductService } from '../service/index';
 
 dotenv.config();
 
 async function makepaymentsession(req: CustomRequest, res: Response) {
   const { user } = req;
   const { orderId } = req.body;
+
   if (!user) {
     return res.status(403).json({ message: 'Unauthorized' });
   }
@@ -23,24 +27,55 @@ async function makepaymentsession(req: CustomRequest, res: Response) {
   const cancel_url = `${baseUrl}/api/v1/payment/cancel?userId=${user.user_id}&orderId=${orderId}`;
 
   try {
-    const lineItems = [
-      {
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: 'T-shirt',
+    const orderData = await OrderService.getOrderById(orderId);
+    if (!orderData) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    const products = orderData.dataValues.products;
+    const productData = await Promise.all(
+      products.map(async (product: { productId: string; quantity: number }) => {
+        const productDetail = await ProductService.getProductById(
+          product.productId,
+        );
+        if (productDetail) {
+          return {
+            ...productDetail.dataValues,
+            orderQuantity: product.quantity,
+          };
+        } else {
+          return null; 
+        }
+      }),
+    ).then((results) => results.filter((result) => result !== null)); 
+
+    if (productData.length === 0) {
+      return res
+        .status(400)
+        .json({ message: 'No valid products found in the order' });
+    }
+
+    const lineItems = productData.map((product) => ({
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: product.name,
+          description: product.description,
+          metadata: {
+            productId: product.product_id,
+            vendorId: product.vendor_id,
+            categoryId: product.category_id,
           },
-
-          unit_amount: 90,
         },
-
-        quantity: 1,
+        unit_amount: product.price * 100,
       },
-    ];
+      quantity: product.orderQuantity,
+    }));
+
 
     const metadata = {
       userId: user.user_id,
-      orderid: orderId,
+      orderId: orderId,
     };
 
     const session = await createStripeSession(
@@ -52,7 +87,7 @@ async function makepaymentsession(req: CustomRequest, res: Response) {
 
     const createPayment = await PaymentService.createPayment(
       metadata.userId,
-      metadata.orderid,
+      metadata.orderId,
       session.amount_total || 0,
       session.id,
     );
@@ -69,7 +104,6 @@ async function makepaymentsession(req: CustomRequest, res: Response) {
     }
   }
 }
-
 async function paymentSuccess(req: Request, res: Response) {
   const { userId, orderId } = req.query;
 
