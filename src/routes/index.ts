@@ -14,6 +14,7 @@ import adminRoute from './admin.routes';
 import paymentRoute from './payment.route';
 import orderRoute from './order.route';
 
+import chatRoute from './chat.route';
 const router = Router();
 const routers: Router[] = [
   paymentRoute,
@@ -29,9 +30,11 @@ const routers: Router[] = [
   cartRoute,
   searchRoutes,
   orderRoute,
-  adminRoute
-]
-
+  adminRoute,
+  chatRoute,
+];
 
 router.use('/api/v1', routers);
 export default router;
+
+
