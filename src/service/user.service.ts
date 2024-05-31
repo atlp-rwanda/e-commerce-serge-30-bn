@@ -62,6 +62,7 @@ export class UserService {
         lastname: userData.lastname,
         emailVerificationToken: emailVerificationToken,
         emailVerificationTokenExpiration: emailVerificationTokenExpiration,
+        previousPasswords: JSON.stringify([hashedPassword]),
       });
 
       // Omit password field from the returned User object

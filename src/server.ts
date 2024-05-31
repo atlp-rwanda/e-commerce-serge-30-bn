@@ -10,11 +10,13 @@ import { logger } from './config/Logger';
 import { production, development, testing } from './db/config';
 import session from 'express-session';
 import router from './routes/index';
+import startCronJob from './utils/password.expiration.cron.job';
 require('./associations/associations');
 require('./utils/product.expiration.cron.job');
 import { socketSetUp } from './utils/chat';
 require('./associations/associations')
 
+startCronJob();
 dotenv.config();
 
 export function configureApp(): express.Application {

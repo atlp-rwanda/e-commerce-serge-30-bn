@@ -22,7 +22,7 @@ const authRoute = Router();
   );
 
   authRoute.put(
-    '/auth/:id/update-password', isAuthenticated,
+    '/auth/:id/update-password',
     validateSchema(AuthSchema.updatePassword),
     updatePassword,
   );

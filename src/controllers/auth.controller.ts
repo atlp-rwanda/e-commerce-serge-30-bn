@@ -72,6 +72,11 @@ export const updatePassword = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Password must match' });
     }
 
+    const uniquepassword= await AuthService.checkPasswordUniqueness(id, newPassword);
+    if(!uniquepassword){
+      return res.status(400).json({ message: 'You have used this password in the last 3 previous update' });
+    }
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await AuthService.updatePassword(id, hashedPassword);
@@ -99,6 +104,9 @@ export const Login = async (req: Request, res: Response) => {
   }
   if (!user.active) {
     return res.status(401).json({ message: 'This account has been deactivated ' });
+  }
+  if (user.passwordExpired) {
+    return res.status(401).json({ message: 'Your password has expired, you need to update it.' });
   }
 
   const passwordMatch = await bcrypt.compare(password, user.password);

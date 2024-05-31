@@ -117,6 +117,57 @@ class AuthService {
     }
 
     await user.update({ password: newPassword });
+
+    let previousPasswords: string[] = [];
+
+    try {
+      if (user.previousPasswords.length === 0) {
+        previousPasswords = [];
+      } else {
+        previousPasswords = JSON.parse(user.previousPasswords);
+      }
+    } catch (error) {
+      throw new Error('Failed to parse previous passwords');
+    }
+
+    previousPasswords.push(newPassword);
+    if (previousPasswords.length > 3) {
+      previousPasswords.shift();
+    }
+  
+    await user.update({
+      password: newPassword,
+      previousPasswords: JSON.stringify(previousPasswords),
+      lastTimePasswordUpdate: new Date(Date.now()),
+      passwordExpired: false
+    });
+  }
+
+  public static async checkPasswordUniqueness(userId: string, newPassword: string): Promise<boolean>{
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    let previousPasswords: string[] = [];
+    try {
+      if (user.previousPasswords.length === 0) {
+        previousPasswords = [];
+      } else {
+        previousPasswords = JSON.parse(user.previousPasswords);
+      }
+    } catch (error) {
+      throw new Error('Failed to parse previous passwords');
+    }
+
+    for (const previousPassword of previousPasswords) {
+      const match = await bcrypt.compare(newPassword, previousPassword);
+      if (match) {
+        return false; // Password has been used before
+      }
+    }
+
+    return true;
   }
   // get user by email
   public static async getUserByEmail(email: string): Promise<User | null> {
