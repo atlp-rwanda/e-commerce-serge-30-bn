@@ -8,7 +8,7 @@ export const reviewVal = {
     rating: Joi.number().integer().min(1).max(5).required(),
   }),
   updateReview: Joi.object({
-    title: Joi.string().min(1).optional().messages,
+    title: Joi.string().min(1).optional(),
     comment: Joi.string().min(1).optional(),
     rating: Joi.number().integer().min(1).max(5).optional()
   }).min(1)

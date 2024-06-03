@@ -23,4 +23,4 @@ module.exports = {
     'src/controllers/**',
     'src/service/**',
   ],
-}
+};
