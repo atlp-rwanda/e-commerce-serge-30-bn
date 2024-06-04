@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import { development, production, testing } from '../db/config';
 import Profile from './profile.model';
+import Review from './review.model';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const isTesting = process.env.NODE_ENV === 'testing';
@@ -23,7 +24,7 @@ class User extends Model {
   emailVerificationToken!: string | null;
   emailVerificationTokenExpiration!: string | null;
   verified!: boolean;
-  active!: boolean; 
+  active!: boolean;
   role!: UserRole;
   firstname!: string;
   lastname!: string;
@@ -31,8 +32,12 @@ class User extends Model {
   previousPasswords!: string;
   passwordExpired!: boolean;
 
-  public static associate(models: { Profile: typeof Profile }) {
+  public static associate(models: {
+    Profile: typeof Profile;
+    Review: typeof Review;
+  }) {
     User.hasOne(models.Profile);
+    User.hasMany(models.Review, { foreignKey: 'user_id', as: 'userId' });
   }
 }
 
@@ -43,6 +48,7 @@ User.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
       allowNull: false,
+      onDelete: 'CASCADE',
     },
     username: {
       type: DataTypes.STRING,

@@ -13,6 +13,8 @@ import searchRoutes from './productSearch.router';
 import adminRoute from './admin.routes';
 import paymentRoute from './payment.route';
 import orderRoute from './order.route';
+import reviewRoutes from './review.routes';
+
 
 import chatRoute from './chat.route';
 const router = Router();
@@ -32,6 +34,9 @@ const routers: Router[] = [
   orderRoute,
   adminRoute,
   chatRoute,
+  adminRoute,
+  reviewRoutes,
+
 ];
 
 router.use('/api/v1', routers);

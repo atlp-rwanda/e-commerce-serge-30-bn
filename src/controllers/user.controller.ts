@@ -39,14 +39,17 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllUsersWithExpiredPasswords = async (req: CustomRequest, res: Response) => {
+export const getAllUsersWithExpiredPasswords = async (
+  req: CustomRequest,
+  res: Response,
+) => {
   try {
     let users;
 
     if (req.user && req.user.role === 'ADMIN') {
-      users = await User.findAll({ 
+      users = await User.findAll({
         where: { passwordExpired: true },
-        attributes: { exclude: ['password', 'previousPasswords'] }
+        attributes: { exclude: ['password', 'previousPasswords'] },
       });
     }
 
@@ -181,13 +184,15 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 // profile part
 
-export const getProfile = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getProfile = async (req: CustomRequest, res: Response) => {
   try {
-    const { id } = req.params;
-    const profile = await fetchProfile(id);
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ success: false, message: 'Unauthorized' });
+    }
+    const { user_id } = req.user;
+    const profile = await fetchProfile(user_id);
 
     if (!profile) {
       res.status(404).json({ message: 'Profile not found' });
@@ -201,10 +206,15 @@ export const getProfile = async (
   }
 };
 
-export const updateProfile = async (req: Request, res: Response) => {
+export const updateProfile = async (req: CustomRequest, res: Response) => {
   try {
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ success: false, message: 'Unauthorized' });
+    }
+    const  id = req.user.user_id
     const updatedFields = req.body;
-    const { id } = req.params;
 
     const newProfile = await modifyProfile({ updatedFields, id });
     return res

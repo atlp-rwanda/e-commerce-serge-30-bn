@@ -1,16 +1,9 @@
 /**
  * @openapi
- * /api/v1/profile/{id}:
+ * /api/v1/users/profile:
  *   put:
- *     summary: Update a profile by ID
+ *     summary: Update a profile
  *     tags: [Profiles]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the profile to update
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -25,15 +18,8 @@
  *       400:
  *         description: Error occurred while updating profile
  *   get:
- *     summary: Get a profile by ID
+ *     summary: Get the profile of the authenticated user
  *     tags: [Profiles]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the profile to retrieve
- *         schema:
- *           type: string
  *     security:
  *       - bearerAuth: []
  *     responses:
