@@ -52,3 +52,126 @@
  *     tags:
  *       - payment
  */
+/**
+ * @openapi
+ * /api/v1/payment/momo:
+ *   post:
+ *     summary: Initiate MoMo Payment
+ *     description: Initiate a payment using the MoMo mobile money service.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               orderId:
+ *                 type: string
+ *                 description: The ID of the order for which the payment is being made.
+ *                 example: "12c410b6-dfe1-4742-8a70-fcdfe50d233d"
+ *               phoneNumber:
+ *                 type: string
+ *                 description: The phone number of the payer.
+ *                 example: "0123456789"
+ *     responses:
+ *       '200':
+ *         description: Successful response.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A success message.
+ *                   example: "Order paid successfully"
+ *                 payment:
+ *                   $ref: '#/components/schemas/Payment'
+ *       '400':
+ *         description: Bad request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message.
+ *                   example: "Order is already paid"
+ *       '403':
+ *         description: Forbidden.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message.
+ *                   example: "Forbidden"
+ *       '404':
+ *         description: Not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message.
+ *                   example: "Order not found"
+ *       '500':
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: An error message.
+ *                   example: "An unexpected error occurred"
+ *     tags:
+ *       - payment
+ * components:
+ *   schemas:
+ *     Payment:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The ID of the payment.
+ *         userId:
+ *           type: string
+ *           description: The ID of the user who made the payment.
+ *         orderId:
+ *           type: string
+ *           description: The ID of the order for which the payment was made.
+ *         amount:
+ *           type: number
+ *           description: The amount of the payment.
+ *         payment_method:
+ *           type: string
+ *           description: The payment method used.
+ *         payment_status:
+ *           type: string
+ *           description: The status of the payment.
+ *         momoId:
+ *           type: string
+ *           description: The reference ID of the MoMo payment.
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date and time when the payment was created.
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date and time when the payment was last updated.
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */

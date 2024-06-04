@@ -44,6 +44,10 @@ class Payment extends Model {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      momoId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       userId: {
         type: DataTypes.UUID,
         allowNull: false,
