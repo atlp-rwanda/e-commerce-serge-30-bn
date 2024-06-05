@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
+import http from 'http'; 
 import roleRoute from './role.route';
 import userRoute from './user.route';
 import authRoute from './auth.route';
@@ -14,9 +15,20 @@ import adminRoute from './admin.routes';
 import paymentRoute from './payment.route';
 import orderRoute from './order.route';
 import reviewRoutes from './review.routes';
-
-
 import chatRoute from './chat.route';
+import injectWebSocketService from '../middleware/injectWebSocket'; 
+import { WebSocketService } from '../utils/orderStatusWebsocket'; 
+
+
+const app = express();
+
+
+const server = http.createServer(app);
+
+
+const webSocketService = new WebSocketService(server);
+
+
 const router = Router();
 const routers: Router[] = [
   paymentRoute,
@@ -39,7 +51,10 @@ const routers: Router[] = [
 
 ];
 
+router.use(injectWebSocketService(webSocketService));
+
 router.use('/api/v1', routers);
+
 export default router;
 
 

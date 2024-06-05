@@ -1,14 +1,31 @@
-import express from "express";
-import createOrder from '../controllers/order.controller';
-import { isAuthenticated } from "../middleware/authentication/auth.middleware";
-import { validateSchema } from "../middleware/validators";
-import { orderSchema } from "../validations/order.validation";
+import express from 'express';
+import { getOrderStatus} from '../controllers/order.controller';
+import { isAuthenticated } from '../middleware/authentication/auth.middleware';
+import { validateSchema } from '../middleware/validators';
+import { orderSchema } from '../validations/order.validation';
 import { isAuthorized } from '../middleware/user.authenticate';
 import { UserRole } from '../models/user.model';
-const orderRoute = express.Router();
+import { updateOrderStatusValidation } from '../validations/orderStatus.validation';
+import createOrder from "../controllers/order.controller";
+import { updateOrderStatusHandler } from '../utils/updateOrderStatusHandler';
 
+const router = express.Router();
 
-orderRoute.post('/checkout', isAuthenticated,validateSchema(orderSchema.order),isAuthorized(UserRole.USER), createOrder);
+router.post(
+  '/checkout',
+  isAuthenticated,
+  validateSchema(orderSchema.order),
+  isAuthorized(UserRole.USER),
+  createOrder
+);
 
+router.get('/orders/:orderId/status', isAuthenticated, getOrderStatus);
 
-export default orderRoute;
+router.post(
+  '/orders/:orderId/status',
+  isAuthenticated,
+  updateOrderStatusValidation,
+  updateOrderStatusHandler
+);
+
+export default router;

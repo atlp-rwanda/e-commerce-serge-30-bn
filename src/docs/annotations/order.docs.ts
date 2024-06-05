@@ -72,3 +72,156 @@
  *     tags:
  *       - order
  */
+
+/**
+ * @openapi
+ * info:
+ *   title: Order Tracking API
+ *   version: 1.0.0
+ *   description: API for tracking order status
+ */
+
+/**
+ * @openapi
+ * tags:
+ *   name: Orders
+ *   description: Operations related to orders
+ */
+
+/**
+ * @openapi
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+/**
+ * @openapi
+ * security:
+ *   - bearerAuth: []
+ */
+
+/**
+ * @openapi
+ * /api/v1/orders/{orderId}/status:
+ *   get:
+ *     summary: Get order status
+ *     description: Retrieve the status of a specific order by its ID.
+ *     tags:
+ *       - Orders
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: orderId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: The ID of the order to retrieve status for
+ *     responses:
+ *       200:
+ *         description: Order status retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: The current status of the order
+ *                 expectedDeliveryDate:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The expected delivery date of the order
+ *       404:
+ *         description: Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+
+/**
+ * @openapi
+ * /api/v1/orders/{orderId}/status:
+ *   post:
+ *     summary: Update order status
+ *     description: Update the status of a specific order by its ID.
+ *     tags:
+ *       - Orders
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: orderId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: The ID of the order to update status for
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 description: The new status of the order
+ *               expectedDeliveryDate:
+ *                 type: string
+ *                 format: date-time
+ *                 description: The new expected delivery date of the order
+ *             required:
+ *               - status
+ *               - expectedDeliveryDate
+ *     responses:
+ *       200:
+ *         description: Order status updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: The updated status of the order
+ *                 expectedDeliveryDate:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The updated expected delivery date of the order
+ *       404:
+ *         description: Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+ 

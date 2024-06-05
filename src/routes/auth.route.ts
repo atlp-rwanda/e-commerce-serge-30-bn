@@ -6,7 +6,6 @@ import {
   EmailSchema,
   EmailTokenSchema,
 } from '../validations/auth.validation';
-import { isAuthenticated } from '../middleware/authentication/auth.middleware';
 const authRoute = Router();
 
   authRoute.post(
