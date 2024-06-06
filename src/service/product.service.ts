@@ -4,6 +4,7 @@ import { User } from 'models';
 import Category from '../models/products.Category.Model';
 import { Op, WhereOptions } from 'sequelize';
 
+
 interface SearchParams {
   name?: string;
   minPrice?: number;
@@ -39,6 +40,7 @@ export class ProductService {
       quantity,
       discount,
     });
+
     return product;
   }
   public static async getProductByNameAndVendorId(

@@ -14,6 +14,8 @@ import startCronJob from './utils/password.expiration.cron.job';
 require('./associations/associations');
 require('./utils/product.expiration.cron.job');
 import { socketSetUp } from './utils/chat';
+import { socketserverstart } from "./utils/notification";
+
 require('./associations/associations')
 
 startCronJob();
@@ -72,3 +74,4 @@ sequelize
     logger.error('Unable to connect to the database:', error);
   });
 socketSetUp(server);
+socketserverstart(server);

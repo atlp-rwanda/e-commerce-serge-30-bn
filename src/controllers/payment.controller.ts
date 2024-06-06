@@ -11,6 +11,7 @@ import { PaymentStatus } from '../models/payment.model';
 import Stripe from 'stripe';
 import { OrderService } from '../service/order.service';
 import { ProductService } from '../service/index';
+import NotificationEvents from '../service/event.service';
 
 dotenv.config();
 
@@ -91,7 +92,7 @@ async function makepaymentsession(req: CustomRequest, res: Response) {
       session.amount_total || 0,
       session.id,
     );
-
+    NotificationEvents.emit("makePayment",orderData,user.user_id);
     return res.status(200).json({
       message:
         'Session started successfully. You can continue with your payment',

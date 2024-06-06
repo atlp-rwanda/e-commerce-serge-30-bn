@@ -52,7 +52,7 @@ export const checkAndMarkExpiredProducts = async (): Promise<Product[]> => {
   return expiredProducts;
 };
 
-if (process.env.NODE_ENV === 'testing') {
+if (process.env.NODE_ENV === 'development') {
   cron.schedule(
     '0 0 * * *',
     async () => {

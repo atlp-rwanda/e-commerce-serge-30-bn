@@ -15,6 +15,8 @@ import adminRoute from './admin.routes';
 import paymentRoute from './payment.route';
 import orderRoute from './order.route';
 import reviewRoutes from './review.routes';
+import notificationRoute from './notification.route';
+
 import chatRoute from './chat.route';
 import injectWebSocketService from '../middleware/injectWebSocket'; 
 import { WebSocketService } from '../utils/orderStatusWebsocket'; 
@@ -31,6 +33,7 @@ const webSocketService = new WebSocketService(server);
 
 const router = Router();
 const routers: Router[] = [
+  notificationRoute,
   paymentRoute,
   wishListRoute,
   roleRoute,
@@ -48,7 +51,6 @@ const routers: Router[] = [
   chatRoute,
   adminRoute,
   reviewRoutes,
-
 ];
 
 router.use(injectWebSocketService(webSocketService));

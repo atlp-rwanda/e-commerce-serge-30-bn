@@ -2,6 +2,7 @@ import User from '../models/user.model';
 import Vendor from '../models/vendor.model';
 import Product from '../models/products.Model';
 import Category from '../models/products.Category.Model';
+import Notification from '../models/notifications.model';
 
 // Importing one-to-one relationship between User table and Vendor table
 User.hasOne(Vendor, {
@@ -39,3 +40,9 @@ Product.belongsTo(Category, {
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE',
 });
+
+Notification.belongsTo(User,{
+  foreignKey: 'userId',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+})
