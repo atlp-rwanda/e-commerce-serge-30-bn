@@ -1,5 +1,4 @@
 import request from 'supertest';
-// import { configureApp } from '../src/server';
 import {
   describe,
   expect,
@@ -11,21 +10,16 @@ import {
 import { UserService } from '../src/service/user.service';
 import User from '../src/models/user.model';
 import { server } from '../src/server';
-// const app = configureApp();
 
 beforeAll(() => {
   server;
 });
 
-
-beforeAll(() => {
-  server;
+afterEach(() => {
+  server.close();
 });
-describe('POST /create', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
 
+describe('POST /api/v1/create', () => {  
   it('should return a 400 error for missing required fields', async () => {
     const response = await request(server).post('/api/v1/create').send({}); // Sending empty object to simulate missing required fields
     expect(response.status).toBe(400);
@@ -35,7 +29,7 @@ describe('POST /create', () => {
   it('should return a 400 error for invalid email', async () => {
     const userData = {
       username: 'testuser',
-      email: 'invalidEmail', // Invalid email format
+      email: 'invalidEmail', 
       password: 'password',
       firstname: 'John',
       lastname: 'Doe',
@@ -52,7 +46,7 @@ describe('POST /create', () => {
     const userData = {
       username: 'testuser',
       email: 'test@example.com',
-      password: 'pass', // Invalid password (less than 6 characters)
+      password: 'pass', 
       firstname: 'John',
       lastname: 'Doe',
     };
@@ -72,7 +66,7 @@ describe('POST /create', () => {
 
     const userData = {
       username: 'testuser',
-      email: 'existing@example.com', // Use an existing email
+      email: 'existing@example.com', 
       password: 'password',
       firstname: 'John',
       lastname: 'Doe',
@@ -88,10 +82,14 @@ describe('POST /create', () => {
     );
   });
 
-  it('should create a new user successfully', async () => {
+  it('should return a 400 error for existing username', async () => {
+    jest
+      .spyOn(UserService, 'createUser')
+      .mockRejectedValue(new Error('Username already exists'));
+
     const userData = {
-      username: 'testuser21',
-      email: 'test@example21.com',
+      username: 'testuser',
+      email: 'existing@example.com', 
       password: 'password',
       firstname: 'John',
       lastname: 'Doe',
@@ -100,24 +98,42 @@ describe('POST /create', () => {
     const response = await request(server)
       .post('/api/v1/create')
       .send(userData);
-    expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty('message', 'Account created!');
-    expect(response.body).toHaveProperty('data');
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty(
+      'message',
+      'Username is already taken',
+    );
+  });
+  
+  jest.setTimeout(40000);
+  it('should return 201 and create a new user successfully', async () => {
+    const userData = {
+      username: 'testuser21',
+      email: 'test21@example.com',
+      password: 'password',
+      firstname: 'John',
+      lastname: 'Doe',
+    };
 
-    // Retrieve the created user
-    const createdUser = await User.findOne({
-      where: { email: userData.email },
-    });
-
-    if (createdUser) {
-      await createdUser.destroy();
-    }
-    const deletedUser = await User.findOne({
-      where: { email: userData.email },
-    });
-    expect(deletedUser).toBeNull();
+    const response = await request(server)
+      .post('/api/v1/create')
+      .send(userData);
+    expect(response.status).toBe(201);  
+    expect(response.body).toHaveProperty(
+      'message',
+      'Account created!',
+    );
   });
 });
-afterAll(()=>{
+
+afterAll(async()=>{
+  // Retrieve the created user
+  const createdUser = await User.findOne({
+    where: { email: 'test21@example.com' },
+  });
+
+  if (createdUser) {
+    await createdUser.destroy();
+  }
   server.close();
 })

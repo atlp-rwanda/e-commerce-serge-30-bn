@@ -34,7 +34,7 @@ class AuthService {
     await user.save();
 
     // Create reset password link
-    const resetUrl = `${process.env.DEPLOYED_URL}/api/v1/auth/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.DEPLOYED_URL_FN}/auth/reset-password/${resetToken}`;
 
     // Generate email content (HTML format recommended for better formatting)
 

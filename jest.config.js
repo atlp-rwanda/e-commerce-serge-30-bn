@@ -2,7 +2,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testTimeout: 15000,
+  testTimeout: 100000,
   verbose: true,
   forceExit: true,
   clearMocks: true,

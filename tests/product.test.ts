@@ -11,7 +11,7 @@ const product_Id = process.env.PRODUCT_ID;
 beforeEach(async () => {
   const loginResponse = await request(app).post('/api/v1/auth/login').send({
     email: 'mahirwe@gmail.com',
-    password: process.env.USER_PASSWORD_TESTS,
+    password: process.env.USER_PASSWORD_TEST,
   });
   console.log(token);
   token = loginResponse.body.token;
@@ -19,7 +19,7 @@ beforeEach(async () => {
 
 describe('PATCH /product/:productId', () => {
   it('require authentication', async () => {
-    const productId = '123e4567-e89b-12d3-a456-426614174000'; // Replace with a valid product ID
+    const productId = '9683cb76-41e9-4d37-8296-1d0f19a4c652'; 
     const response = await request(app)
       .patch(`/api/v1/product/${productId}`)
       .send({});
@@ -78,7 +78,7 @@ describe('GET /api/v1/product/:productId', () => {
   });
   it('should return specific product by id', async () => {
     const res = await request(app)
-      .get('/api/v1/product/c8903a64-f93c-4de1-baa0-6b02b0ca5518')
+      .get('/api/v1/product/43076463-aa2d-47d0-8bf7-85d8775bc847')
       .set('Cookie', `Authorization=${token}`)
       .send();
 
@@ -103,7 +103,6 @@ describe('GET /api/v1/product/:productId', () => {
 
 describe('GET /api/v1/product/all', () => {
   it('should require authentication', async () => {
-    // Replace with a valid product ID
     const response = await request(app).get(`/api/v1/product/all`).send();
 
     expect(response.status).toBe(401);

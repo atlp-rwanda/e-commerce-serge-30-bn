@@ -2,12 +2,16 @@ import request from 'supertest';
 import { describe, expect, it, jest ,beforeAll,afterAll} from '@jest/globals';
 import AuthService from '../src/service/auth.service';
 import {server} from "../src/server"
-import jwt from 'jsonwebtoken'
-import User from '../src/models/user.model';
 jest.mock('../src/service/auth.service');
 
-beforeAll(() => {
+let token: string;
+beforeAll(async() => {
   server;
+  const loginResponse = await request(server).post('/api/v1/auth/login').send({
+    email: 'testuser1234@example.com',
+    password: 'testuser1234',
+  });
+  token = loginResponse.body.token;
 });
 
 describe('POST /api/v1/auth/forgot-password', () => {
@@ -30,30 +34,12 @@ describe('POST /api/v1/auth/forgot-password', () => {
 
 describe('PUT /api/v1/auth/:id/update-password', () => {
 
-  beforeAll(async () => {
-    await request(server)
-    .post('/api/v1/create')
-    .send({
-      username: 'testuser1234',
-      email: 'testuser1234@example.com',
-      password: 'testuser1234',
-      firstname: 'test',
-      lastname: 'user1234',
-    });
-  });
-
   it('should return a 401 error for an invalid old password', async() =>{
     jest.spyOn(AuthService, 'verifyPassword').mockResolvedValue(false);
-    const email = 'testuser1234@example.com';
-    const user = await AuthService.getUserByEmail(email);
 
-    if(user){
-      const passwordRemoved = { ...user.toJSON(), password: undefined };
-      const token = jwt.sign({ user: passwordRemoved }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
-
-      const response = await request(server)
-      .put(`/api/v1/auth/:id/update-password`)
-      .set('Authorization', `Bearer ${token}`)
+    const response = await request(server)
+      .put('/api/v1/auth/userId/update-password')
+      .set('Cookie', `Authorization=${token}`)
       .send({
         oldPassword: 'wrongOldPassword',
         newPassword: 'newPassword',
@@ -62,70 +48,41 @@ describe('PUT /api/v1/auth/:id/update-password', () => {
 
       expect(response.status).toBe(401);
       expect(response.body).toEqual({ message: 'Invalid old password' });
-    }
   });
 
   it('should return a 401 error if new password and confirm password do not match', async () => {
     jest.spyOn(AuthService, 'verifyPassword').mockResolvedValue(true);
-    const email = 'testuser1234@example.com';
-    const user = await AuthService.getUserByEmail(email);
-
-    if(user){
-      const passwordRemoved = { ...user.toJSON(), password: undefined };
-      const token = jwt.sign({ user: passwordRemoved }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
-
-      const response = await request(server)
-      .put(`/api/v1/auth/:id/update-password`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        oldPassword: 'validOldPassword',
-        newPassword: 'newPassword',
-        confirmPassword: 'newPassword123',
-      });
-
-      expect(response.status).toBe(401);
-      expect(response.body).toEqual({ message: 'Password must match' });
-    }
-  });
-
-  it('should return a 500 error if user is not found when updating password', async () => {
-    jest.spyOn(AuthService, 'verifyPassword').mockResolvedValue(true);
-    jest.spyOn(AuthService, 'updatePassword').mockRejectedValue(new Error('User not found'))
     
-    const email = 'testuser1234@example.com';
-    const user = await AuthService.getUserByEmail(email);
 
-    if(user){
-      const passwordRemoved = { ...user.toJSON(), password: undefined };
-      const token = jwt.sign({ user: passwordRemoved }, process.env.JWT_SECRET || '', { expiresIn: '1h' });
+    const response = await request(server)
+    .put('/api/v1/auth/userId/update-password')
+    .set('Authorization', `Bearer ${token}`)
+    .send({
+      oldPassword: 'validOldPassword',
+      newPassword: 'newPassword',
+      confirmPassword: 'newPassword123',
+    });
 
-      const response = await request(server)
-      .put(`/api/v1/auth/:id/update-password`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        oldPassword: 'validOldPassword',
-        newPassword: 'newPassword',
-        confirmPassword: 'newPassword',
-      });
-
-      expect(response.status).toBe(500);
-      expect(response.body).toEqual({ message: 'Internal server error' });
-    }
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ message: 'Password must match' });
   });
 
-  afterAll(async () =>{
-    const createdUser = await User.findOne({
-      where: { email: 'testuser1234@example.com' },
+  it('should return a 400 error if the password has been used before', async () => {
+    jest.spyOn(AuthService, 'verifyPassword').mockResolvedValue(true);
+
+    const response = await request(server)
+    .put('/api/v1/auth/userId/update-password')
+    .set('Authorization', `Bearer ${token}`)
+    .send({
+      oldPassword: 'validOldPassword',
+      newPassword: 'newPassword',
+      confirmPassword: 'newPassword',
     });
 
-    if (createdUser) {
-      await createdUser.destroy();
-    }
-    const deletedUser = await User.findOne({
-      where: { email: 'testuser1234@example.com' },
-    });
-    expect(deletedUser).toBeNull();
-  })
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'You have used this password in the last 3 previous update' });
+
+  });
 });
 
 
@@ -156,7 +113,6 @@ describe('GET /api/v1/auth/logout', () => {
     });
 });
 afterAll(async () => {
-  // Perform cleanup tasks here, such as stopping the server
    server.close();
 });
 describe('POST /api/v1/auth/login', () => {

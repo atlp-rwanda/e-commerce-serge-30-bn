@@ -12,7 +12,7 @@ interface ProductProp {
   quantity: number,
   price:number
 }
-async function updateProductInventory(products:ProductProp[]) {
+export async function updateProductInventory(products:ProductProp[]) {
   const transaction = await sequelize.transaction();
 
   try {

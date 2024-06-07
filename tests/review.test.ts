@@ -4,9 +4,7 @@ import { reviewController } from '../src/controllers/review.controller';
 import { server } from '../src/server';
 import { NextFunction, Request, Response } from 'express';
 import { checkIfPaid } from '../src/middleware/authentication/checkIfPaid.middleware';
-
 jest.mock('../src/service/review.service');
-
 beforeAll(() => {
   server;
 });
@@ -157,7 +155,7 @@ describe(' feedback CRUD', () => {
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
-  it('should return 401', async () => {
+  it('should return 401,add feedback', async () => {
     const req = {
       params: { id: 'product123' },
       body: { title: 'testtitle', comment: 'testcomment' },
@@ -170,6 +168,34 @@ describe(' feedback CRUD', () => {
 
     await reviewController.addFeedBack(req as Request, res as Response);
     expect(res.status).toHaveBeenCalledWith(401);
+  });
+  it('should return 401,delete feedback,no userObj on req', async () => {
+    const req = {
+      params: { id: 'product123' },
+      body: { title: 'testtitle', comment: 'testcomment' },
+    } as Partial<Request>;
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    } as Partial<Response>;
+
+    await reviewController.deleteFeedBack(req as Request, res as Response);
+    expect(res.status).toHaveBeenCalledWith(401);
+  });
+  it('should return 400,delete feedback,no params', async () => {
+    const req = {
+      user: { user_id: 'test123' },
+      body: { title: 'testtitle', comment: 'testcomment' },
+    } as Partial<Request>;
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    } as Partial<Response>;
+
+    await reviewController.deleteFeedBack(req as Request, res as Response);
+    expect(res.status).toHaveBeenCalledWith(400);
   });
 });
 describe('CHECKPAYMENT', () => {

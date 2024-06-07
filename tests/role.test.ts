@@ -10,7 +10,7 @@ let token: string | undefined;
 beforeEach(async () => {
   const loginResponse = await request(app).post('/api/v1/auth/login').send({
     email: 'martinemahirwe@gmail.com',
-    password: process.env.USER_PASSWORD_TESTS,
+    password: process.env.USER_PASSWORD_TEST,
   });
   console.log(token);
   token = loginResponse.body.token;
@@ -27,7 +27,7 @@ describe('PATCH /api/v1/product/:userId', () => {
   it('should return a 200 status and updated user data', async () => {
 
     const response = await request(app)
-      .patch(`/api/v1/role/734fa5b7-6eb0-4311-a683-d626e36ff46b`)
+      .patch(`/api/v1/role/47d0b1e8-f04b-402e-bb5e-57941be42964`)
       .send({ role: 'ADMIN' })
       .set('Cookie', `Authorization=${token}`);
 
