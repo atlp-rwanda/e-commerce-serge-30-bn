@@ -3,6 +3,7 @@ import {
   makepaymentsession,
   paymentSuccess,
   paymentCancel,
+  getAllPayments,
 } from '../controllers/payment.controller';
 import { isAuthenticated } from '../middleware/authentication/auth.middleware';
 import { isAuthorized } from '../middleware/user.authenticate';
@@ -26,5 +27,6 @@ paymentRoute.post(
 );
 paymentRoute.get('/payment/success', isAuthenticated, paymentSuccess);
 paymentRoute.get('/payment/cancel', isAuthenticated, paymentCancel);
+paymentRoute.get('/payment/all', isAuthenticated, getAllPayments);
 
 export default paymentRoute;

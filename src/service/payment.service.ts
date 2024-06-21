@@ -55,6 +55,21 @@ class PaymentService {
 
     return payment;
   }
+  public static async getAllPayments(userId:string) :  Promise<Payment[] | null>{
+    const payments = await Payment.findAll({where: {userId}});
+    if (!payments) {
+      throw new Error('payments not found');
+    }
+    return payments;
+  }
+  public static async adminGetAllPayments() :  Promise<Payment[] | null>{
+    const payments = await Payment.findAll();
+    if (!payments) {
+      throw new Error('payments not found');
+    }
+    return payments;
+  }
+
 }
 
 export default PaymentService;

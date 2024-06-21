@@ -78,7 +78,7 @@ describe('GET /api/v1/product/:productId', () => {
   });
   it('should return specific product by id', async () => {
     const res = await request(app)
-      .get('/api/v1/product/c8903a64-f93c-4de1-baa0-6b02b0ca5518')
+      .get('/api/v1/product/43076463-aa2d-47d0-8bf7-85d8775bc847')
       .set('Cookie', `Authorization=${token}`)
       .send();
 
@@ -103,7 +103,6 @@ describe('GET /api/v1/product/:productId', () => {
 
 describe('GET /api/v1/product/all', () => {
   it('should require authentication', async () => {
-    // Replace with a valid product ID
     const response = await request(app).get(`/api/v1/product/all`).send();
 
     expect(response.status).toBe(401);

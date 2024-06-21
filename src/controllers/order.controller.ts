@@ -7,6 +7,8 @@ import { Request, Response } from 'express';
 import NotificationEvents from '../service/event.service';
 import User from '../models/user.model';
 import { WebSocketService } from '../utils/orderStatusWebsocket';
+import { CustomRequest } from '../middleware/authentication/auth.middleware';
+import { VendorService } from '../service/vendor.service';
 interface ProductProp {
   productId: string,
   quantity: number,
@@ -98,6 +100,45 @@ interface AuthenticatedRequest extends Request {
   user?: User;
   webSocketService?: WebSocketService;
 }
+export const getAllOrders = async (req: CustomRequest, res:Response) => {
+try{
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({ success: false, message: 'Unauthorized' });
+  }
+  let orders = await OrderService.getAllOrders(req.user.user_id);
+  const role = req.user.role;
+
+  if(role === "ADMIN"){
+    orders = await OrderService.adminGetAllOrders();
+  }
+  if (role === 'VENDOR') {
+    const vendor = await VendorService.getVendorByAuthenticatedUserId(
+      req.user.user_id,
+    );
+    if (!vendor) {
+      return res.status(404).json({ message: 'Vendor not found' });
+    }
+    orders = await OrderService.getAllOrders(vendor.user_id);
+}
+if (!orders || orders.length < 1) {
+  return res.status(404).json({
+    success: false,
+    message: 'you have no orders',
+  });
+}
+return res.status(200).json({
+  success: true,
+  message: 'orders retrieved successfully',
+  data: orders,
+});
+}catch (error) {
+  console.error(error);
+  return res.status(500).json({ message: 'Internal server error' });
+}
+}
+
 
 export const getOrderStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
