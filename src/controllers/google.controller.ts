@@ -35,9 +35,7 @@ export async function googleAuth(req: Request, res: Response) {
         });
       } catch (error) {
         console.error('Error creating user:', error);
-        return res.redirect(
-          'https://e-commerce-serge-30-fn-staging.netlify.app/error',
-        );
+        return res.redirect(process.env.ERROR_REDIRECT_URL as string);
       }
     }
 
@@ -53,10 +51,8 @@ export async function googleAuth(req: Request, res: Response) {
         sameSite: 'lax',
         secure: true,
       })
-      .redirect('https://e-commerce-serge-30-fn-staging.netlify.app');
+      .redirect(process.env.SUCCESS_REDIRECT_URL as string);
   } catch (error) {
-    return res.redirect(
-      'https://e-commerce-serge-30-fn-staging.netlify.app/error',
-    );
+    return res.redirect(process.env.ERROR_REDIRECT_URL as string);
   }
 }
