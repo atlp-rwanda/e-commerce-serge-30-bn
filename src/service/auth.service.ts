@@ -34,7 +34,7 @@ class AuthService {
     await user.save();
 
     // Create reset password link
-    const resetUrl = `${process.env.DEPLOYED_URL}/api/v1/auth/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.DEPLOYED_URL_FN}/auth/reset-password/${resetToken}`;
 
     // Generate email content (HTML format recommended for better formatting)
 
@@ -83,10 +83,7 @@ class AuthService {
     }
 
     // Hash the new password before saving
-    const hashedPassword = crypto
-      .createHash('sha256')
-      .update(password)
-      .digest('hex');
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
     user.password = hashedPassword;
     user.resetToken = null; // Clear reset token after successful password change
