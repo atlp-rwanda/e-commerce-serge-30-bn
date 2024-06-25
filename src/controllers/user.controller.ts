@@ -115,13 +115,13 @@ export const emailVerification = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Token is missing' });
     }
 
-    const message = await UserService.emailVerification(token);
-
+    await UserService.emailVerification(token);
+    
     // Handle the result as needed
-    return res.status(200).json({ message });
+    return res.status(200).redirect(`${process.env.SUCCESS_REDIRECT_URL}/auth/verify`);
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(404).json({ message: error.message });
+      return res.status(404).redirect(`${process.env.SUCCESS_REDIRECT_URL}/auth/verifyFailed`);
     }
   }
 };
@@ -136,12 +136,12 @@ export const resendVerificationToken = async (req: Request, res: Response) => {
         .json({ message: 'Email address is missing in the request body' });
     }
 
-    const message = await UserService.resendVerificationToken(userEmail);
+    await UserService.resendVerificationToken(userEmail);
 
-    return res.status(200).json({ message });
+    return res.status(200).redirect(`${process.env.SUCCESS_REDIRECT_URL}/auth/verify`);
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(404).json({ message: error.message });
+      return res.status(404).redirect(`${process.env.SUCCESS_REDIRECT_URL}/auth/verifyFailed`);
     }
   }
 };
