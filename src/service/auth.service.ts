@@ -88,6 +88,8 @@ class AuthService {
     user.password = hashedPassword;
     user.resetToken = null; // Clear reset token after successful password change
     user.resetTokenExpiration = null;
+    user.lastTimePasswordUpdate =  new Date(Date.now());
+    user.passwordExpired = false
     await user.save();
 
     return 'Password reset successful';
