@@ -4,6 +4,10 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import { getGoogleOAuthToken, getGoogleUser } from '../service/google.service';
+import { sendEmail } from '../helpers/sendEmail';
+import { ordinaryEmailTemplate } from '../helpers/EmailTemplates/ordinaryEmailTemplate';
+
+const fromEmail = process.env.FROM_EMAIL;
 
 export async function googleAuth(req: Request, res: Response) {
   const code = req.query.code as string;
@@ -33,6 +37,19 @@ export async function googleAuth(req: Request, res: Response) {
           verified: true,
           image_url: picture,
         });
+
+        const message = `Dear ${googleUser.firstname},<br><br><br><br>You have successfully registered to the Exclusive E-commerce platform. You are now allowed to use our Services.<br><br><br>Best,<br><br>Exclusive Team`;
+        if (fromEmail) {
+          const emailOptions = {
+            to: googleUser.email,
+            from: fromEmail,
+            subject: 'Registration Successful',
+            template: () => ordinaryEmailTemplate(message),
+          };
+          await sendEmail(emailOptions);
+        } else {
+          console.error('fromEmail environment variable is not set.');
+        }
       } catch (error) {
         console.error('Error creating user:', error);
         return res.redirect(process.env.ERROR_REDIRECT_URL as string);
@@ -48,7 +65,7 @@ export async function googleAuth(req: Request, res: Response) {
       .cookie('Authorization', authToken, {
         httpOnly: true,
         maxAge: 60 * 600 * 1000,
-        sameSite: 'lax',
+        sameSite: 'none',
         secure: true,
       })
       .redirect(process.env.SUCCESS_REDIRECT_URL as string);
