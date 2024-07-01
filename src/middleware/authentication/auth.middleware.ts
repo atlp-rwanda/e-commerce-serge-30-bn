@@ -19,7 +19,8 @@ export const isAuthenticated = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const authorizationCookie = req.cookies['Authorization'];
+    const authorizationCookie =
+      req.cookies['Authorization'] || req.headers.authorization;
 
     if (!authorizationCookie) {
       res.status(401).send({

@@ -14,9 +14,9 @@ import startCronJob from './utils/password.expiration.cron.job';
 require('./associations/associations');
 require('./utils/product.expiration.cron.job');
 import { socketSetUp } from './utils/chat';
-import { socketserverstart } from "./utils/notification";
+import { socketserverstart } from './utils/notification';
 
-require('./associations/associations')
+require('./associations/associations');
 
 startCronJob();
 dotenv.config();
@@ -24,7 +24,11 @@ dotenv.config();
 export function configureApp(): express.Application {
   const app = express();
   app.use(express.json());
-  app.use(cors());
+  const corsConfig = {
+    credentials: true,
+    origin: [`${process.env.LOCAL_URL_FN}`, `${process.env.DEPLOYED_URL_FN}`],
+  };
+  app.use(cors(corsConfig));
   app.use(bodyParser.json());
   app.use(cookieParser());
   app.use(express.urlencoded({ extended: true }));
@@ -55,7 +59,6 @@ export const server = createServer(app);
 const isProduction = process.env.NODE_ENV === 'production';
 const isTesting = process.env.NODE_ENV === 'testing';
 const sequelize = isProduction ? production : isTesting ? testing : development;
-
 
 sequelize
   .authenticate()
