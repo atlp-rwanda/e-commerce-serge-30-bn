@@ -26,7 +26,7 @@ export function configureApp(): express.Application {
   app.use(express.json());
   const corsConfig = {
     credentials: true,
-    origin: [`${process.env.LOCAL_URL_FN}`, `${process.env.DEPLOYED_URL_FN}`],
+    origin: '*',
   };
   app.use(cors(corsConfig));
   app.use(bodyParser.json());
