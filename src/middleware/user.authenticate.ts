@@ -13,7 +13,8 @@ export const isAuthorized = (...roles:UserRole[]) => {
   return async (req: RequestUser, res: Response, next: NextFunction) => {
 
     try {
-      const authorizationCookie = req.cookies['Authorization'];
+      const authorizationCookie =
+        req.cookies['Authorization'] || req.headers.authorization;
       const secretKey  = process.env.JWT_SECRET;
       const decoded = verifyJwt(
         authorizationCookie,
