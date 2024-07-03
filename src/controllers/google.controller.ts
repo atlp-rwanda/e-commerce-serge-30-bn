@@ -56,19 +56,31 @@ export async function googleAuth(req: Request, res: Response) {
       }
     }
 
+    const googleUserString = JSON.stringify(googleUser);
+
+    const encodedGoogleUser = encodeURIComponent(googleUserString);
+
     const JWT_SECRET = process.env.JWT_SECRET as string;
-    const authToken = jwt.sign({ googleUser }, JWT_SECRET, {
+    const token = jwt.sign({ googleUser }, JWT_SECRET, {
       expiresIn: '1h',
     });
+    const SUCCESS_REDIRECT_URL = process.env.SUCCESS_REDIRECT_URL as string;
+    let redirectURL = SUCCESS_REDIRECT_URL;
+    if (googleUser.role === 'VENDOR') {
+      redirectURL += '/vendor';
+    } else if (googleUser.role === 'ADMIN') {
+      redirectURL += '/admin';
+    }
+
     res
-      .header('Authorization', `Bearer ${authToken}`)
-      .cookie('Authorization', authToken, {
+      .header('Authorization', token)
+      .cookie('Authorization', token, {
         httpOnly: true,
         maxAge: 60 * 600 * 1000,
         sameSite: 'none',
         secure: true,
       })
-      .redirect(process.env.SUCCESS_REDIRECT_URL as string);
+      .redirect(`${redirectURL}/?token=${token}&user=${encodedGoogleUser}`);
   } catch (error) {
     return res.redirect(process.env.ERROR_REDIRECT_URL as string);
   }
