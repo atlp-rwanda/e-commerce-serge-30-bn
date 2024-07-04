@@ -506,3 +506,17 @@
  *                   type: string
  *                   example: Internal server error
  */
+
+/**
+ * @openapi
+ * /api/v1/products/list:
+ *   get:
+ *     summary: Get all non-expired & Available products
+ *     tags:
+ *       - Products
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved all non-expired & available products
+ *       400:
+ *         description: Error occurred while retrieving products
+ */

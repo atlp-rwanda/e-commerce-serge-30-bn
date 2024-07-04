@@ -42,6 +42,7 @@ productRoutes.get(
   isAuthenticated,
   productsController.getAllProducts,
 );
+productRoutes.get('/products/list', productsController.getAllProductsAvailable);
 productRoutes.get(
   '/products/all/expired',
   isAuthorized(UserRole.VENDOR),

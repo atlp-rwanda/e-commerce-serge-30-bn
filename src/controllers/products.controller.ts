@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request , Response } from 'express';
 import { ProductService, deleteItemService } from '../service/product.service';
 import { CustomRequest } from '../middleware/authentication/auth.middleware';
 import { VendorService } from '../service/vendor.service';
@@ -184,6 +184,21 @@ export const productsController = {
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'Internal server error' });
+    }
+  },
+  async getAllProductsAvailable(req: Request, res: Response) {
+    try {
+      const products = await ProductService.getAllProductsAvailable();
+
+      return res.status(200).json({
+        success: true,
+        message: 'Products retrieved successfully',
+        data: products,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message: error instanceof Error ? error.message : String(error),
+      });
     }
   },
 
