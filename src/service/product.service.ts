@@ -4,7 +4,6 @@ import { User } from 'models';
 import Category from '../models/products.Category.Model';
 import { Op, WhereOptions } from 'sequelize';
 
-
 interface SearchParams {
   name?: string;
   minPrice?: number;
@@ -207,8 +206,26 @@ export class ProductService {
       throw new Error('Internal Server Error');
     }
   }
-}
+  public static async getAllProductsAvailable(): Promise<Product[] | null> {
+    try {
+      const products = await Product.findAll({
+        where: { available: true, expired: false },
+      });
 
+      if (products.length === 0) {
+        throw new Error('No products found');
+      }
+
+      return products;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred');
+      }
+    }
+  }
+}
 // deleting service
 
 export const deleteItemService = async (
