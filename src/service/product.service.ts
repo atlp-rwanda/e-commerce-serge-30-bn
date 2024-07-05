@@ -3,7 +3,7 @@ import Product from '../models/products.Model';
 import { User } from 'models';
 import Category from '../models/products.Category.Model';
 import { Op, WhereOptions } from 'sequelize';
-
+import { VendorService } from './vendor.service';
 
 interface SearchParams {
   name?: string;
@@ -207,8 +207,52 @@ export class ProductService {
       throw new Error('Internal Server Error');
     }
   }
-}
+  public static async getAllProductsAvailable(): Promise<Product[] | null> {
+    try {
+      const products = await Product.findAll({
+        where: { available: true, expired: false },
+      });
 
+      if (products.length === 0) {
+        throw new Error('No products found');
+      }
+
+      return products;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred');
+      }
+    }
+  }
+
+  public static async updateProductImage(user: User, productId: string, updateData: Partial<Product>): Promise<Product> {
+    try {
+      const product = await Product.findByPk(productId);; 
+      const vendor = await VendorService.getVendorByAuthenticatedUserId(user.user_id);
+      if (!product) {
+        throw new Error('Product not found');
+      }
+
+      if (product.vendor_id !== vendor.vendor_id) {
+        throw new Error('Unauthorized');
+      }
+
+      Object.assign(product, updateData);
+
+      await product.save();
+
+      return product; 
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`${error.message}`);
+      } else {
+        throw new Error('Unknown error occurred');
+      }
+    }
+  }
+}
 // deleting service
 
 export const deleteItemService = async (
@@ -243,3 +287,5 @@ export const deleteItemService = async (
     }
   }
 };
+
+

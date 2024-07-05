@@ -42,6 +42,7 @@ productRoutes.get(
   isAuthenticated,
   productsController.getAllProducts,
 );
+productRoutes.get('/products/list', productsController.getAllProductsAvailable);
 productRoutes.get(
   '/products/all/expired',
   isAuthorized(UserRole.VENDOR),
@@ -56,5 +57,9 @@ productRoutes.put(
   isAuthenticated,
   productsController.changeStatus,
 );
-
+productRoutes.delete(
+  '/product/:productId/image', 
+  isAuthenticated,
+  productsController.deleteProductImage,
+);
 export default productRoutes;

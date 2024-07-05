@@ -506,3 +506,114 @@
  *                   type: string
  *                   example: Internal server error
  */
+
+/**
+ * @openapi
+ * /api/v1/products/list:
+ *   get:
+ *     summary: Get all non-expired & Available products
+ *     tags:
+ *       - Products
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved all non-expired & available products
+ *       400:
+ *         description: Error occurred while retrieving products
+ */
+/**
+ * @openapi
+ * /api/v1/product/{productId}/image:
+ *   delete:
+ *     summary: Delete a single image from a product
+ *     description: Deletes a single image URL from a product if the user has vendor permissions.
+ *     tags:
+ *       - Products
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: productId
+ *         in: path
+ *         description: The unique identifier of the product.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               imageUrl:
+ *                 type: string
+ *                 description: The URL of the image to delete
+ *     responses:
+ *       '200':
+ *         description: Image deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Image deleted successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/Product'
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Forbidden
+ *       '404':
+ *         description: Product not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Product not found
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
