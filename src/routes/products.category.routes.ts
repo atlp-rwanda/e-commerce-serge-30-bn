@@ -19,7 +19,6 @@ categoryRoutes.post(
 );
 categoryRoutes.get(
   '/categories/all',
-  isAuthenticated,
   productsCategoryController.getAllCategories,
 );
 categoryRoutes.get(

@@ -30,7 +30,7 @@ export const productsCategoryController = {
   },
 
   // Getting all product categories
-  async getAllCategories(req: CustomRequest, res: Response) {
+  async getAllCategories( req:Request ,res: Response) {
     try {
       const categories = await CategoryService.getAllCategories();
       if (!categories) {
