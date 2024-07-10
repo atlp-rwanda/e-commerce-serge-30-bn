@@ -264,6 +264,63 @@ export const productsController = {
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
+
+
+  async deleteProductImage(req: CustomRequest, res: Response) {
+    try {
+      const user = req.user;
+      if (!user) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+  
+      const role = user.role;
+      const { productId } = req.params;
+      const { imageUrl } = req.body;
+  
+      const product = await ProductService.getProductById(productId);
+      if (!product) {
+        return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+  
+      if (role === 'VENDOR') {
+        const vendor = await VendorService.getVendorByAuthenticatedUserId(user.user_id);
+        if (!vendor) {
+          return res.status(404).json({ message: 'Vendor not found' });
+        }
+  
+        
+  
+        if (product.vendor_id !== vendor.vendor_id) {
+          return res.status(403).json({ success: false, message: 'Forbidden' });
+        }
+      }
+  
+  
+      const updatedImageUrls = product.image_url.filter((url: string) => url !== imageUrl);
+  
+      const updatedProduct = await ProductService.updateProductImage(user, productId, { image_url: updatedImageUrls });
+  
+  
+      return res.status(200).json({
+        success: true,
+        message: 'Image deleted successfully',
+        data: updatedProduct,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(500).json({ success: false, message: error.message });
+      }
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+  
+  
+
+
+
+
+
+
 };
 
 // delete product from a collection
@@ -284,3 +341,4 @@ export const deleteItem = async (req: CustomRequest, res: Response) => {
     });
   }
 };
+

@@ -57,5 +57,9 @@ productRoutes.put(
   isAuthenticated,
   productsController.changeStatus,
 );
-
+productRoutes.delete(
+  '/product/:productId/image', 
+  isAuthenticated,
+  productsController.deleteProductImage,
+);
 export default productRoutes;
