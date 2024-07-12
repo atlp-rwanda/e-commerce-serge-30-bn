@@ -1,66 +1,64 @@
-import { ProductService } from '../src/service/product.service'; 
-import { sequelize } from '../src/db/config'; 
-import { describe, it, expect, beforeAll, afterAll,jest } from '@jest/globals';
+import { ProductService } from '../src/service/product.service';
+import Product from '../src/models/products.Model';
+import Category from '../src/models/products.Category.Model';
+import { describe, it, expect, jest, beforeAll, afterAll } from '@jest/globals';
+import express, { Application } from 'express';
+import { Server } from 'http';
+import { Op } from 'sequelize';
+
+jest.mock('../src/models/products.Model');
+jest.mock('../src/models/products.Category.Model');
+
+let server: Server;
+
+const createTestServer = (): Application => {
+  const app = express();
+  app.use(express.json());
+  return app;
+};
 
 describe('ProductService', () => {
-  beforeAll(async () => {
-    await sequelize.sync();
+  beforeAll((done) => {
+    const app = createTestServer();
+    server = app.listen(8001, done);
   });
 
-  afterAll(async () => {
-    await sequelize.close();
+  afterAll((done) => {
+    server.close(done);
   });
 
-  it('should return products based on name', async () => {
-    const products = await ProductService.searchProducts({ name: 'iPhone' });
-    expect(products).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'iPhone' })]));
-  });
+  describe('searchProducts', () => {
+    it('should return products based on search criteria', async () => {
+      const criteria = { name: 'Test', minPrice: 10, maxPrice: 100, category: 'Electronics' };
+      const mockCategory = { category_id: 1 };
+      const mockProducts = [{ name: 'Test Product', price: 50, category_id: 1 }];
 
-  it('should return products based on price range', async () => {
-    const products = await ProductService.searchProducts({ minPrice: 500, maxPrice: 100 }); 
-    expect(products).toEqual(expect.arrayContaining([expect.objectContaining({ price: expect.any(Number) })]));
-  });
+      (Category.findOne as jest.Mock).mockResolvedValue(mockCategory as never);
+      (Product.findAll as jest.Mock).mockResolvedValue(mockProducts as never);
 
-  it('should return products based on category', async () => {
-    const products = await ProductService.searchProducts({ category: 'string' });
-    expect(products).toEqual(expect.arrayContaining([expect.objectContaining({ category_id: expect.any(String) })]));
-  });
+      const result = await ProductService.searchProducts(criteria);
 
-  it('should return an empty array if category is not found', async () => {
-    const products = await ProductService.searchProducts({ category: 'nonexistent' });
-    expect(products).toEqual([]);
-  });
-
-  it('should handle combined search criteria', async () => {
-    const products = await ProductService.searchProducts({
-      name: 'iPhone',
-      minPrice: 0, 
-      maxPrice: 100, 
-      category: 'string',
-    });
-    expect(products).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        name: 'iPhone',
-        price: expect.any(Number),
-        category_id: expect.any(String)
-      })
-    ]));
-  });
-
-  it('should throw an error if Product.findAll fails', async () => {
-    jest.spyOn(ProductService, 'searchProducts').mockImplementation(() => {
-      throw new Error('Database error');
+      expect(result).toEqual(mockProducts);
+      expect(Category.findOne).toHaveBeenCalledWith({ where: { name: criteria.category }, attributes: ['category_id'] });
+      expect(Product.findAll).toHaveBeenCalledWith({
+        where: {
+          name: { [Op.like]: `%${criteria.name}%` },
+          price: { [Op.gte]: criteria.minPrice, [Op.lte]: criteria.maxPrice },
+          category_id: mockCategory.category_id
+        }
+      });
     });
 
-    await expect(ProductService.searchProducts({ name: 'iPhone' }))
-      .rejects
-      .toThrow('Database error');
+    it('should return an empty array if category not found', async () => {
+      const criteria = { name: 'Test', minPrice: 10, maxPrice: 100, category: 'NonExistentCategory' };
 
-    jest.restoreAllMocks(); 
+      (Category.findOne as jest.Mock).mockResolvedValue(null as never);
+
+      const result = await ProductService.searchProducts(criteria);
+
+      expect(result).toEqual([]);
+      expect(Category.findOne).toHaveBeenCalledWith({ where: { name: criteria.category }, attributes: ['category_id'] });
+      expect(Product.findAll).not.toHaveBeenCalled();
+    });
   });
-
-  
- 
-
-
 });

@@ -11,7 +11,7 @@ const product_Id = process.env.PRODUCT_ID;
 beforeEach(async () => {
   const loginResponse = await request(app).post('/api/v1/auth/login').send({
     email: 'mahirwe@gmail.com',
-    password: process.env.USER_PASSWORD_TESTS,
+    password: process.env.USER_PASSWORD_TEST,
   });
   console.log(token);
   token = loginResponse.body.token;
@@ -19,7 +19,7 @@ beforeEach(async () => {
 
 describe('PATCH /product/:productId', () => {
   it('require authentication', async () => {
-    const productId = '123e4567-e89b-12d3-a456-426614174000'; // Replace with a valid product ID
+    const productId = '9683cb76-41e9-4d37-8296-1d0f19a4c652'; 
     const response = await request(app)
       .patch(`/api/v1/product/${productId}`)
       .send({});

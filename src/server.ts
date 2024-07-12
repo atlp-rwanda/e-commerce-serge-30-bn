@@ -10,15 +10,14 @@ import { logger } from './config/Logger';
 import { production, development, testing } from './db/config';
 import session from 'express-session';
 import router from './routes/index';
-import startCronJob from './utils/password.expiration.cron.job';
 require('./associations/associations');
 require('./utils/product.expiration.cron.job');
+require('./utils/password.expiration.cron.job');
 import { socketSetUp } from './utils/chat';
 import { socketserverstart } from './utils/notification';
 
 require('./associations/associations');
 
-startCronJob();
 dotenv.config();
 
 export function configureApp(): express.Application {
@@ -43,6 +42,14 @@ export function configureApp(): express.Application {
       saveUninitialized: false,
     }),
   );
+
+  app.use(cors({
+    origin: process.env.DEPLOYED_URL,
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type,Authorization'
+  }));
+
+
   swaggerDocs(app, parseInt(`${PORT}`, 10));
   app.all('*', (req, res) => {
     res.status(404).json({

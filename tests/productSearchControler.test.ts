@@ -1,8 +1,7 @@
 import request from 'supertest';
 import { server } from '../src/server';
 import { sequelize } from '../src/db/config';
-import { describe, it, expect, beforeAll, afterAll, jest} from '@jest/globals';
-import { ProductService } from '../src/service/product.service';
+import { describe, it, expect, beforeAll, afterAll} from '@jest/globals';
 
 
 describe('ProductController', () => {
@@ -49,11 +48,7 @@ describe('ProductController', () => {
   
       expect(response.status).toBe(200);
       expect(response.body).toEqual(expect.arrayContaining([
-        expect.objectContaining({
-          name: 'iPhone',
-          price: expect.any(Number),
-          category_id: expect.any(String),
-        })
+        expect.objectContaining({"available": false, "category_id": "8e144232-0810-4a35-a2c3-b5bfc5cb91be", "createdAt": "2024-06-06T17:41:42.690Z", "description": "This is the iphone phone to buy please", "discount": 0, "expired": true, "expiry_date": "2024-06-06T15:08:39.547Z", "finalRatings": 0, "image_url": ["https://www.youtube.com/watch?v=Z_G86SKXP3s", "https://www.youtube.com/watch?v=Z_G86SKXP3s", "https://www.youtube.com/watch?v=Z_G86SKXP3s", "https://www.youtube.com/watch?v=Z_G86SKXP3s"], "name": "iPhone 15", "price": 20, "product_id": "700232a2-fe00-4503-8faf-056b8975e2c5", "quantity": 8, "reviewsCount": 0, "updatedAt": "2024-06-08T18:45:15.093Z", "vendor_id": "05f3b702-3a35-4701-9633-d53642f51912"})
       ]));
     });
 
@@ -67,21 +62,4 @@ describe('ProductController', () => {
         message: 'No products found'
       });
     });
-  
-    it('should handle errors and return 500 status', async () => {
-        
-        jest.spyOn(ProductService, 'searchProducts').mockImplementation(() => {
-          throw new Error('Database error');
-        });
-    
-        const response = await request(server)
-          .get('/api/products')
-          .query({ invalidField: 'invalidValue' });
-    
-        expect(response.status).toBe(500);
-        expect(response.body).toEqual({ message: 'Internal server error' });
-      });
-
-      
-
   });

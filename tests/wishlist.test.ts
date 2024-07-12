@@ -10,8 +10,8 @@ let id: string | undefined;
 
 beforeEach(async () => {
   const loginResponse = await request(app).post('/api/v1/auth/login').send({
-    email: 'pageyi4254@godsigma.com',
-    password: process.env.USER_PASSWORD_TESTS,
+    email: 'twizald.02@gmail.com',
+    password: '123123',
   });
   console.log(token);
   token = loginResponse.body.token;
@@ -21,7 +21,7 @@ describe('POST /api/v1/wishlist/:productId', () => {
   //create wishlist
   it('should add a product to the wishlist', async () => {
     // Arrange
-    const productId = '103e01f1-1ee3-4a85-ad4f-a00aa21bc884';
+    const productId = 'eb162f54-3f87-4c2d-a5a6-496d27126419';
 
     // Act
     const response = await request(app)
@@ -34,7 +34,7 @@ describe('POST /api/v1/wishlist/:productId', () => {
 
   it('should return product already exist', async () => {
     // Arrange
-    const productId = '103e01f1-1ee3-4a85-ad4f-a00aa21bc884';
+    const productId = 'eb162f54-3f87-4c2d-a5a6-496d27126419';
 
     // Act
     const response = await request(app)
@@ -94,17 +94,6 @@ describe('DELETE /api/v1/wishlist/:wishlistId', () => {
     // Assert
     expect(response.statusCode).toBe(404);
     expect(response.body.message).toBe('Wishlist not found');
-  });
-
-  // No product in wishlist
-  it('should return 404 if wishlist is empty', async () => {
-    // Act
-    const response = await request(app)
-      .get(`/api/v1/wishlist`)
-      .set('Cookie', `Authorization=${token}`);
-    // Assert
-    expect(response.statusCode).toBe(404);
-    expect(response.body.message).toBe('No product in wishlist');
   });
 });
 

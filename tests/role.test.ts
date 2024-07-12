@@ -10,7 +10,7 @@ let token: string | undefined;
 beforeEach(async () => {
   const loginResponse = await request(app).post('/api/v1/auth/login').send({
     email: 'martinemahirwe@gmail.com',
-    password: process.env.USER_PASSWORD_TESTS,
+    password: process.env.USER_PASSWORD_TEST,
   });
   console.log(token);
   token = loginResponse.body.token;

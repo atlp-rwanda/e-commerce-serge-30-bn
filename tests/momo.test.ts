@@ -17,11 +17,11 @@ let validPhoneNumber: string;
 
 beforeEach(async () => {
   const loginResponse = await request(app).post('/api/v1/auth/login').send({
-    email: 'pageyi4254@godsigma.com',
+    email: 'mokilo8257@noefa.com',
     password: process.env.USER_PASSWORD_TESTS,
   });
   token = loginResponse.body.token;
-  orderId = 'ad114118-3fbd-443b-a849-dc02fd39d564';
+  orderId = 'fa54a6b3-48eb-44cb-a9c8-2e0b30df0188';
   validPhoneNumber = '0123456789';
 });
 
