@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html>
   <head>
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
@@ -197,7 +196,7 @@
     <script>
       const loginToAccount = () => {
         document.addEventListener('DOMContentLoaded', (e) => {
-          e.preventDefault;
+          e.preventDefault();
           const email = document.querySelector('#email');
           const password = document.getElementById('password');
           const loginButton = document.getElementById('login');
@@ -218,7 +217,7 @@
             );
             const result = await response.json();
             if (result.token) {
-              const storeToken = localStorage.setItem('Token', result.token);
+              localStorage.setItem('Token', result.token);
               establishSocketConnection();
               loginForm.style.display = 'none';
               chatElement.style.display = 'block';
@@ -230,7 +229,6 @@
       const establishSocketConnection = () => {
         const tokenValue = localStorage.getItem('Token');
         if (tokenValue) {
-          // Establishing socket connection with authentication token
           const socket = io('http://localhost:8000', {
             auth: {
               token: tokenValue,
@@ -244,7 +242,6 @@
 
           const getMessage = async () => {
             const displayMessage = document.getElementById('messages');
-
             const messages = await fetch(
               'http://localhost:8000/api/chats/all',
               {
@@ -273,13 +270,11 @@
                 newMessage.style.textAlign = 'right';
               } else {
                 newMessage.innerHTML = `<strong>${data[i].User.firstName}</strong>: ${data[i].content}`;
-                formatTyping(data[i].User.firstName);
                 span.textContent = findTime;
                 span.classList.add('time');
                 newMessage.className = 'Others';
                 newMessage.style.textAlign = 'left';
               }
-              const displayMessage = document.getElementById('messages');
               newMessage.appendChild(span);
               displayMessage.appendChild(newMessage);
             }
@@ -305,7 +300,6 @@
           };
           socket.on('returnMessage', (data) => {
             const newMessage = document.createElement('li');
-            const senderName = data.senderName;
             const span = document.createElement('span');
             const findTime = findRealTime(data.date);
             if (data !== '') {
@@ -322,9 +316,8 @@
                 span.classList.add('time');
                 newMessage.style.textAlign = 'left';
               }
-              const displayMessage = document.getElementById('messages');
               newMessage.appendChild(span);
-              displayMessage.appendChild(newMessage);
+              document.getElementById('messages').appendChild(newMessage);
             } else {
               console.error('Message content is empty');
             }
@@ -335,26 +328,28 @@
             const typingTimeout = 1000;
             inputField.addEventListener('input', () => {
               clearTimeout(typingTimer);
-              socket.emit('typing', true);
+              socket.emit('typing', { isTyping: true, name }); 
               typingTimer = setTimeout(() => {
-                socket.emit('typing', false);
+                socket.emit('typing', { isTyping: false, name });
               }, typingTimeout);
             });
             const typingStatus = document.getElementById('typingStatus');
-            socket.on('typing', (isTyping) => {
-              if (isTyping) {
+            socket.on('typing', (data) => {
+              
+              if (data.isTyping) {
                 typingStatus.style.display = 'block';
-                typingStatus.textContent = ` ${name} is typing...`;
+                typingStatus.textContent = `${data.name} is typing...`; 
               } else {
                 typingStatus.style.display = 'none';
                 typingStatus.textContent = '';
               }
             });
           };
+          formatTyping('User'); 
           document.getElementById('form').addEventListener('submit', (e) => {
             e.preventDefault();
             const message = document.getElementById('input');
-            if (message.value === '') return alert('The message is emmpty');
+            if (message.value === '') return alert('The message is empty');
             socket.emit('sentMessage', {
               content: message.value,
               socketId: socket.id,

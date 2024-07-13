@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-
 import { Socket, Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { decodToken } from './jwt.utils';
@@ -59,17 +57,26 @@ const sentMessage = async (socket: CustomSocket, data: Message, io: Server) => {
     }
   }
 };
-const handleTyping = (socket: CustomSocket, isTyping: boolean) => {
-  socket.broadcast.emit('typing', {
-    userId: socket.userId,
-    isTyping: isTyping,
-  });
+const handleTyping = async (socket: CustomSocket, data: { isTyping: boolean }) => {
+  const user = await AuthService.getUserNames(socket.userId as string);
+  if (user) {
+    socket.broadcast.emit('typing', {
+      userId: socket.userId,
+      isTyping: data.isTyping,
+      name: user.firstname
+    });
+  }
 };
 const disconnected = () => {
   logger.info('User disconnected...');
 };
 export const socketSetUp = (server: HttpServer) => {
-  const io = new Server(server);
+  const io = new Server(server, {
+    cors: {
+      origin: process.env.DEPLOYED_URL_FN,
+      methods: ['GET', 'POST'],
+    },
+  });
   io.use(async (socket: CustomSocket, next) => {
     const id = findId(socket);
     socket.userId = id;
