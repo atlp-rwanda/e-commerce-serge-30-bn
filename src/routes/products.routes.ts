@@ -50,6 +50,12 @@ productRoutes.get(
   productsController.getAllExpiredProducts,
 );
 
+productRoutes.get(
+  '/product/:productId/recommended',
+  isAuthenticated,
+  productsController.recommendedProducts,
+);
+
 productRoutes.put(
   '/product/available/:id',
   validateSchema(productSchema.statusChange),

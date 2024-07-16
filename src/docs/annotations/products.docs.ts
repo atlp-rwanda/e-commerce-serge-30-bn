@@ -522,6 +522,35 @@
  */
 /**
  * @openapi
+ * /api/v1/product/{productId}/recommended:
+ *   get:
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the product for which recommendations are fetched
+ *     tags:
+ *       - Products
+ *     responses:
+ *       '200':
+ *         description: A list of recommended products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       '401':
+ *         description: Unauthorized - Missing or invalid authentication token
+ *       '404':
+ *         description: Product not found
+ *       '500':
+ *         description: Internal server error
+ */
+/**
+ * @openapi
  * /api/v1/product/{productId}/image:
  *   delete:
  *     summary: Delete a single image from a product

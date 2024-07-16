@@ -312,15 +312,32 @@ export const productsController = {
       }
       return res.status(500).json({ message: 'Internal server error' });
     }
-  }
-  
-  
+  },
 
+  async recommendedProducts(req: CustomRequest, res: Response) {
+    try {
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ success: false, message: 'Unauthorized' });
+      }
+      const user_id = req.user.user_id;
+      const { productId } = req.params;
+      const recommendedProducts = await ProductService.recommendedProducts(
+        user_id,
+        productId,
+      );
 
-
-
-
-
+      return res.status(200).json({
+        success: true,
+        message: 'Retrieved Successfully',
+        data: recommendedProducts,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  },
 };
 
 // delete product from a collection

@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { development, production, testing } from '../db/config';
+import Product from './products.Model'
 
 const isProduction = process.env.NODE_ENV === 'production';
 const isTesting = process.env.NODE_ENV === 'testing';
@@ -9,6 +10,7 @@ class Category extends Model {
   public category_id!: string;
   public name!: string;
   public description!: string;
+  public Products?: Product[];
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
