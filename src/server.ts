@@ -43,6 +43,7 @@ export function configureApp(): express.Application {
       saveUninitialized: false,
     }),
   );
+
   swaggerDocs(app, parseInt(`${PORT}`, 10));
   app.all('*', (req, res) => {
     res.status(404).json({
