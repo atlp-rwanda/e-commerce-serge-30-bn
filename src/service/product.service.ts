@@ -1,8 +1,10 @@
 import Vendor from '../models/vendor.model';
 import Product from '../models/products.Model';
 import { User } from 'models';
+import Cart from '../models/cart.model';
+import Wishlist from '../models/wishlist.model';
 import Category from '../models/products.Category.Model';
-import { Op, WhereOptions } from 'sequelize';
+import { Op, WhereOptions, Sequelize } from 'sequelize';
 import { VendorService } from './vendor.service';
 
 interface SearchParams {
@@ -252,7 +254,127 @@ export class ProductService {
       }
     }
   }
+
+  public static async recommendedProducts(userId: string, productId: string) {
+    try {
+      const recommendedProducts: Product[] = [];
+      const categoryCounts: { [categoryId: string]: number } = {};
+
+      // Fetch main product's category
+      const mainProduct = await Product.findByPk(productId, {
+        include: [Vendor, Category],
+      });
+
+      if (mainProduct) {
+        const productCategoryId = mainProduct.category_id;
+        if (productCategoryId) {
+          categoryCounts[productCategoryId] = categoryCounts[productCategoryId]
+            ? categoryCounts[productCategoryId] + 1
+            : 1;
+        }
+      }
+
+      // Fetch user's cart products' categories
+      const userCart = await Cart.findOne({ where: { userId } });
+      if (userCart && userCart.products) {
+        const cartProducts = userCart.products;
+        for (const cartProduct of cartProducts) {
+          if (cartProduct.productId !== productId) {
+            const cartProductDetails = await Product.findByPk(
+              cartProduct.productId,
+              {
+                include: [Vendor, Category],
+              },
+            );
+            if (cartProductDetails) {
+              const cartProductCategoryId = cartProductDetails.category_id;
+              if (cartProductCategoryId) {
+                categoryCounts[cartProductCategoryId] = categoryCounts[
+                  cartProductCategoryId
+                ]
+                  ? categoryCounts[cartProductCategoryId] + 1
+                  : 1;
+              }
+            }
+          }
+        }
+      }
+
+      // Fetch user's wishlist products' categories
+      const userWishlist = await Wishlist.findAll({
+        where: { user_id: userId },
+        include: [Product],
+      });
+
+      for (const wishlistItem of userWishlist) {
+        const wishlistProduct = wishlistItem.dataValues.Product;
+        if (wishlistProduct && wishlistProduct.productId !== productId) {
+          const wishlistProductCategoryId = wishlistProduct.category_id;
+          if (wishlistProductCategoryId) {
+            categoryCounts[wishlistProductCategoryId] = categoryCounts[
+              wishlistProductCategoryId
+            ]
+              ? categoryCounts[wishlistProductCategoryId] + 1
+              : 1;
+          }
+        }
+      }
+
+      // Convert categoryCounts to an array of [categoryId, count] pairs and sort by count descending
+      const categoryEntries = Object.entries(categoryCounts);
+      categoryEntries.sort((a, b) => b[1] - a[1]);
+
+      // Get top 3 repeating categories
+      const topCategories = categoryEntries
+        .slice(0, 3)
+        .map(([categoryId]) => categoryId);
+
+      // Fetch recommended products for top categories
+      for (const categoryId of topCategories) {
+        const sameCategoryProducts = await Category.findOne({
+          where: { category_id: categoryId },
+          include: [Product],
+        });
+        if (sameCategoryProducts && sameCategoryProducts.Products) {
+          // Limit to 2 products per category
+          const filteredProducts = sameCategoryProducts.Products.filter(
+            (prod) =>
+              prod.product_id !== productId &&
+              !recommendedProducts.some(
+                (recProd) => recProd.product_id === prod.product_id,
+              ),
+          );
+          recommendedProducts.push(...filteredProducts.slice(0, 2));
+        }
+      }
+
+      // Add random products if recommended products are less than 5
+      if (recommendedProducts.length < 6) {
+        const existingProductIds = recommendedProducts.map(
+          (prod) => prod.product_id,
+        );
+
+        const additionalProducts = await Product.findAll({
+          where: {
+            available: true,
+            expired: false,
+            product_id: { [Op.notIn]: [...existingProductIds, productId] },
+          },
+          order: Sequelize.fn('RANDOM'),
+          limit: 6 - recommendedProducts.length,
+        });
+
+        recommendedProducts.push(...additionalProducts);
+      }
+
+      return recommendedProducts;
+    } catch (error) {
+      console.error('Error fetching recommended products:', error);
+      throw error;
+    }
+  }
 }
+
 // deleting service
 
 export const deleteItemService = async (
@@ -287,5 +409,3 @@ export const deleteItemService = async (
     }
   }
 };
-
-
