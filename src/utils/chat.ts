@@ -57,16 +57,20 @@ const sentMessage = async (socket: CustomSocket, data: Message, io: Server) => {
     }
   }
 };
-const handleTyping = async (socket: CustomSocket, data: { isTyping: boolean }) => {
+const handleTyping = async (
+  socket: CustomSocket,
+  data: { isTyping: boolean },
+) => {
   const user = await AuthService.getUserNames(socket.userId as string);
   if (user) {
     socket.broadcast.emit('typing', {
       userId: socket.userId,
       isTyping: data.isTyping,
-      name: user.firstname
+      name: user.firstname,
     });
   }
 };
+
 const disconnected = () => {
   logger.info('User disconnected...');
 };

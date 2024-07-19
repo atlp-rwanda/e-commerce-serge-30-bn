@@ -24,11 +24,11 @@ dotenv.config();
 export function configureApp(): express.Application {
   const app = express();
   app.use(express.json());
-  const corsConfig = {
-    credentials: true,
-    origin: [`${process.env.LOCAL_URL_FN}`, `${process.env.DEPLOYED_URL_FN}`],
-  };
-  app.use(cors(corsConfig));
+  app.use(
+    cors({
+      origin: '*',
+    }),
+  );
   app.use(bodyParser.json());
   app.use(cookieParser());
   app.use(express.urlencoded({ extended: true }));
