@@ -46,10 +46,10 @@ async function makepaymentsession(req: CustomRequest, res: Response) {
             orderQuantity: product.quantity,
           };
         } else {
-          return null; 
+          return null;
         }
       }),
-    ).then((results) => results.filter((result) => result !== null)); 
+    ).then((results) => results.filter((result) => result !== null));
 
     if (productData.length === 0) {
       return res
@@ -74,7 +74,6 @@ async function makepaymentsession(req: CustomRequest, res: Response) {
       quantity: product.orderQuantity,
     }));
 
-
     const metadata = {
       userId: user.user_id,
       orderId: orderId,
@@ -93,7 +92,7 @@ async function makepaymentsession(req: CustomRequest, res: Response) {
       session.amount_total || 0,
       session.id,
     );
-    NotificationEvents.emit("makePayment",orderData,user.user_id);
+    NotificationEvents.emit('makePayment', orderData, user.user_id);
     return res.status(200).json({
       message:
         'Session started successfully. You can continue with your payment',
@@ -134,13 +133,19 @@ async function paymentSuccess(req: Request, res: Response) {
         PaymentStatus.Completed,
       );
 
-      return res.status(200).json({ message: 'Payment successful' });
+      return res.redirect(
+        `${process.env.SUCCESS_REDIRECT_URL}/payment/success`,
+      );
     } else {
-      return res.status(400).json({ message: 'Payment not successful' });
+      return res.redirect(
+        `${process.env.SUCCESS_REDIRECT_URL}/payment/failure`,
+      );
     }
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(404).json({ message: error.message });
+      return res.redirect(
+        `${process.env.SUCCESS_REDIRECT_URL}/payment/failure`,
+      );
     }
   }
 }
@@ -159,7 +164,9 @@ async function paymentCancel(req: Request, res: Response) {
     );
 
     if (!payment) {
-      return res.status(404).json({ message: 'Payment not found' });
+      return res.redirect(
+        `${process.env.SUCCESS_REDIRECT_URL}/payment/failure`,
+      );
     }
 
     await PaymentService.updatePaymentStatus(
@@ -169,25 +176,25 @@ async function paymentCancel(req: Request, res: Response) {
       PaymentStatus.Canceled,
     );
     await deleteSession(payment.stripeId);
-    return res.status(200).json({ message: 'Payment canceled' });
+    return res.redirect(`${process.env.SUCCESS_REDIRECT_URL}/payment/failure`);
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(404).json({ message: error.message });
+      return res.redirect(
+        `${process.env.SUCCESS_REDIRECT_URL}/payment/failure`,
+      );
     }
   }
 }
 
-export const getAllPayments = async (req: CustomRequest, res:Response) => {
-  try{
+export const getAllPayments = async (req: CustomRequest, res: Response) => {
+  try {
     if (!req.user) {
-      return res
-        .status(401)
-        .json({ success: false, message: 'Unauthorized' });
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
     let payments = await PaymentService.getAllPayments(req.user.user_id);
     const role = req.user.role;
 
-    if(role === "ADMIN"){
+    if (role === 'ADMIN') {
       payments = await PaymentService.adminGetAllPayments();
     }
     if (role === 'VENDOR') {
@@ -198,23 +205,22 @@ export const getAllPayments = async (req: CustomRequest, res:Response) => {
         return res.status(404).json({ message: 'Vendor not found' });
       }
       payments = await PaymentService.getAllPayments(vendor.user_id);
-  }
-  if (!payments || payments.length < 1) {
-    return res.status(404).json({
-      success: false,
-      message: 'you have no payments',
+    }
+    if (!payments || payments.length < 1) {
+      return res.status(404).json({
+        success: false,
+        message: 'you have no payments',
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: 'payments retrieved successfully',
+      data: payments,
     });
-  }
-  return res.status(200).json({
-    success: true,
-    message: 'payments retrieved successfully',
-    data: payments,
-  });
-  }catch (error) {
+  } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Internal server error' });
   }
-  }
-  
+};
 
 export { makepaymentsession, paymentSuccess, paymentCancel };
