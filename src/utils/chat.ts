@@ -70,7 +70,6 @@ const handleTyping = async (
     });
   }
 };
-
 const disconnected = () => {
   logger.info('User disconnected...');
 };
