@@ -10,25 +10,20 @@ import { logger } from './config/Logger';
 import { production, development, testing } from './db/config';
 import session from 'express-session';
 import router from './routes/index';
-import startCronJob from './utils/password.expiration.cron.job';
 require('./associations/associations');
 require('./utils/product.expiration.cron.job');
 import { socketSetUp } from './utils/chat';
+require('./associations/associations');
+import startCronJob from './utils/password.expiration.cron.job';
 import { socketserverstart } from './utils/notification';
 
-require('./associations/associations');
-
-startCronJob();
+startCronJob()
 dotenv.config();
 
 export function configureApp(): express.Application {
   const app = express();
   app.use(express.json());
-  app.use(
-    cors({
-      origin: '*',
-    }),
-  );
+  app.use(cors());
   app.use(bodyParser.json());
   app.use(cookieParser());
   app.use(express.urlencoded({ extended: true }));
@@ -60,7 +55,7 @@ export const server = createServer(app);
 const isProduction = process.env.NODE_ENV === 'production';
 const isTesting = process.env.NODE_ENV === 'testing';
 const sequelize = isProduction ? production : isTesting ? testing : development;
-
+socketserverstart(server);
 sequelize
   .authenticate()
   .then(() => {
@@ -78,4 +73,3 @@ sequelize
     logger.error('Unable to connect to the database:', error);
   });
 socketSetUp(server);
-socketserverstart(server);
